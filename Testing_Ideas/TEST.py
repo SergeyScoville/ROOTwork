@@ -39,7 +39,7 @@ new_histogram2.Add(hist2)
 
 
 new_histogram2.SetLineColor(ROOT.kRed)
-new_histogram2.Draw("same")
+new_histogram2.Draw("sames")
 canvas.Update()
 
 output_file = ROOT.TFile("trying_new_combination.root", "RECREATE")
