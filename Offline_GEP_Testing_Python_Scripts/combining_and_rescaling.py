@@ -4,6 +4,7 @@ This is a Python script that is going to take in three root files and grab histo
 
 import ROOT
 import sys
+from PIL import Image
 
 try:
     bins = int(sys.argv[4])
@@ -25,18 +26,22 @@ hist_legend_names = ["", "", ""]
 
 for i in range(len(hists)):
     if "Calo422" in hists[i]:
-        hist_legend_names[i] = "Calo 422"
+        hist_legend_names[i] = "Calo_422"
     elif "Calo420" in hists[i]:
-        hist_legend_names[i] = "Calo 420"
+        hist_legend_names[i] = "Calo_420"
     elif "CaloCal" in hists[i]:
-        hist_legend_names[i] = "Calo Cal"
+        hist_legend_names[i] = "Calo_Cal"
 
 # Get the histograms from each file
 hist1 = file1.Get(histogram1_name)
 hist2 = file2.Get(histogram2_name)
 hist3 = file3.Get(histogram3_name)
 
-canvas = ROOT.TCanvas("canvas", "Histograms", 800, 600)
+hist1.SetName(hist_legend_names[0])
+hist2.SetName(hist_legend_names[1])
+hist3.SetName(hist_legend_names[2])
+
+canvas = ROOT.TCanvas("canvas", "Histograms", 1200, 800)
 
 def find_divisors(number):
     divisors = []
@@ -135,44 +140,53 @@ hist3.SetBinContent(last_bin3, hist3.GetBinContent(last_bin3) + overflow_bin_con
 hist1.GetXaxis().SetTitle("Number of Topoclusters")
 hist1.GetXaxis().CenterTitle()
 hist1.GetXaxis().SetTitleOffset(1.2)
-hist1.GetYaxis().SetTitle("Ratio of events/total events ")
+hist1.GetYaxis().SetTitle("Fraction of events")
 hist1.GetYaxis().CenterTitle()
+hist1.GetYaxis().SetTitleOffset(1.6)
 hist1.GetYaxis().SetNdivisions(-6, ROOT.kFALSE) # Removing minor tickmarks
 
 
 hist1.Draw()
 canvas.Update()
 
-hist1.Print()
+stats_box1 = hist1.GetListOfFunctions().FindObject("stats")
+stats_box1.SetTextSize(0.025)
+stats_box1.SetX1NDC(0.8)  # Set X-coordinate of the lower-left corner
+stats_box1.SetY1NDC(0.8)  # Set Y-coordinate of the lower-left corner
+stats_box1.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
+stats_box1.SetY2NDC(0.95)  # Set Y-coordinate of the upper-right corner
+
 
 hist2.SetLineColor(ROOT.kRed)
 hist2.Draw("SAMES")
 
-hist2.Print()
-
 canvas.Update()
+
+stats_box2 = hist2.GetListOfFunctions().FindObject("stats")
+stats_box2.SetTextSize(0.025)
+stats_box2.SetX1NDC(0.8)  # Set X-coordinate of the lower-left corner
+stats_box2.SetY1NDC(0.65)  # Set Y-coordinate of the lower-left corner
+stats_box2.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
+stats_box2.SetY2NDC(0.8)
 
 
 hist3.SetLineColor(ROOT.kGreen)
 hist3.Draw("SAMES")
 
-hist3.Print()
 canvas.Update()
 
-#hist1.SetStats(0)
-#hist2.SetStats(0)
-#hist3.SetStats(0)
-
-
-
-# Update the canvas to display the changes
-canvas.Update()
+stats_box3 = hist3.GetListOfFunctions().FindObject("stats")
+stats_box3.SetTextSize(0.025)
+stats_box3.SetX1NDC(0.8)  # Set X-coordinate of the lower-left corner
+stats_box3.SetY1NDC(0.5)  # Set Y-coordinate of the lower-left corner
+stats_box3.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
+stats_box3.SetY2NDC(0.65)
 
 hist1.SetTitle("Number of Topoclusters measured with offline GEP algorithms")
 canvas.SetName("All_GEP_Algo")
 canvas.Update()
 
-legend = ROOT.TLegend(0.7,0.6,0.85,0.75)    # Add a legend near the top right corner
+legend = ROOT.TLegend(0.6,0.6,0.75,0.75)    # Add a legend near the top right corner
 legend.AddEntry(hist1,hist_legend_names[0])               # Add the MC histogram, labelled as "MC"
 legend.AddEntry(hist2,hist_legend_names[1])           # Add the data points, labelled as "Data"
 legend.AddEntry(hist3, hist_legend_names[2])
@@ -181,6 +195,10 @@ legend.SetTextSize(0.03)
 legend.Draw("same")  
 
 canvas.Update()
+ROOT.gEnv.SetValue("Hist.PictureCompress", 1)
+
+canvas.SaveAs("combining_and_rescaling_TESTING.png")
+canvas.SaveSource("combining_and_rescaling_10_rebin_TESTING.C")
 
 output_file = ROOT.TFile("combined_histograms_"+str(bins)+"_rebin.root", "RECREATE")
 canvas.Write()
