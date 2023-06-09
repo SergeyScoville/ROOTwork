@@ -36,9 +36,9 @@ if "--multifile" in sys.argv:
 else:
     file = ROOT.TFile(sys.argv[1])
 
-    hist1 = file.Get("h_Calo422TopoClusters_N")
-    hist2 = file.Get("h_Calo420TopoClusters_N")
-    hist3 = file.Get("h_CaloCalTopoClusters_N")
+    hist1 = file.Get("h_Calo422TopoClusters_et")
+    hist2 = file.Get("h_Calo420TopoClusters_et")
+    hist3 = file.Get("h_CaloCalTopoClusters_et")
     hist_legend_names = ["", "", ""]
 
     hists = ["h_Calo422TopoClusters_N", "h_Calo420TopoClusters_N", "h_CaloCalTopoClusters_N"]
@@ -56,6 +56,8 @@ hist2.SetName(hist_legend_names[1])
 hist3.SetName(hist_legend_names[2])
 
 canvas = ROOT.TCanvas("canvas", "Histograms", 1200, 800)
+canvas.SetLogy()
+canvas.Update()
 
 def find_divisors(number):
     divisors = []
@@ -83,7 +85,7 @@ def get_last_bin(histogram):
 def histogram_modifiers(individual_histograms, xmax, ymax, bins):
     for i in individual_histograms:
         i.GetXaxis().SetRangeUser(0, xmax+50)
-        i.GetYaxis().SetRangeUser(0, 1.1*ymax)
+        i.GetYaxis().SetRangeUser(1, 1.1*ymax)
         i.SetLineWidth(2)
     return
 
@@ -138,7 +140,7 @@ y_max = get_histograms_ymax([hist1, hist2, hist3], bins)
 histogram_modifiers([hist1, hist2, hist3], x_max, y_max, bins)
 
 #hist1.SetEntries(50)
-
+"""
 # Add the overflow to the last visible bin for each histogram
 last_bin1 = hist1.GetNbinsX()
 overflow_bin_content = hist1.GetBinContent(last_bin1 + 1)
@@ -150,10 +152,11 @@ hist2.SetBinContent(last_bin2, hist2.GetBinContent(last_bin2) + overflow_bin_con
 
 last_bin3 = hist3.GetNbinsX()
 overflow_bin_content = hist3.GetBinContent(last_bin3 + 1)
-hist3.SetBinContent(last_bin3, hist3.GetBinContent(last_bin3) + overflow_bin_content)
+hist3.SetBinContent(last_bin3, hist3.GetBinContent(last_bin3) + overflow_bin_content)"""
 
 hist1.GetXaxis().SetTitle("Number of Topoclusters")
 hist1.GetXaxis().CenterTitle()
+hist1.GetXaxis().SetDecimals()
 hist1.GetXaxis().SetTitleOffset(1.2)
 hist1.GetYaxis().SetTitle("Fraction of events")
 hist1.GetYaxis().CenterTitle()
@@ -161,9 +164,10 @@ hist1.GetYaxis().SetTitleOffset(1.6)
 hist1.GetYaxis().SetNdivisions(-6, ROOT.kFALSE) # Removing minor tickmarks
 hist1.SetFillColorAlpha(ROOT.kBlue, 0.1)
 hist1.SetFillStyle(3144)
+hist1.Sumw2()
 
 
-hist1.Draw()
+hist1.Draw("hist")
 canvas.Update()
 
 stats_box1 = hist1.GetListOfFunctions().FindObject("stats")
@@ -175,9 +179,11 @@ stats_box1.SetY2NDC(0.95)  # Set Y-coordinate of the upper-right corner
 
 
 hist2.SetLineColor(ROOT.kRed)
-hist2.Draw("SAMES")
+hist2.Sumw2()
+hist2.Draw("hist SAMES")
 hist2.SetFillColorAlpha(ROOT.kRed, 0.1)
 hist2.SetFillStyle(3490)
+
 
 canvas.Update()
 
@@ -188,9 +194,9 @@ stats_box2.SetY1NDC(0.65)  # Set Y-coordinate of the lower-left corner
 stats_box2.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
 stats_box2.SetY2NDC(0.8)
 
-
+hist3.Sumw2()
 hist3.SetLineColor(ROOT.kGreen+2)
-hist3.Draw("SAMES")
+hist3.Draw("hist SAMES")
 hist3.SetFillColorAlpha(ROOT.kGreen+2, 0.1)
 
 canvas.Update()
@@ -202,7 +208,7 @@ stats_box3.SetY1NDC(0.5)  # Set Y-coordinate of the lower-left corner
 stats_box3.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
 stats_box3.SetY2NDC(0.65)
 
-hist1.SetTitle("Number of Topoclusters measured with offline GEP algorithms")
+hist1.SetTitle("Et distribution")
 canvas.SetName("All_GEP_Algo")
 canvas.Update()
 
@@ -217,8 +223,13 @@ legend.Draw("same")
 canvas.Update()
 ROOT.gEnv.SetValue("Hist.PictureCompress", 1)
 
-canvas.SaveAs("hist_Et0_"+str(bins)+"_rebin.png")
-canvas.SaveSource("hist_Et0_"+str(bins)+"_rebin.C")
+hist1.GetXaxis().SetMaxDigits(4)
+hist2.GetXaxis().SetMaxDigits(4)
+hist3.GetXaxis().SetMaxDigits(4)
+canvas.Update()
+
+canvas.SaveAs("hist_Et0_"+str(bins)+"_rebin_et_dist.png")
+canvas.SaveSource("hist_Et0_"+str(bins)+"_rebin_et_dist.C")
 
 output_file = ROOT.TFile("combined_histograms_"+str(bins)+"_rebin.root", "RECREATE")
 canvas.Write()

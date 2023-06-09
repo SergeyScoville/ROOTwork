@@ -183,7 +183,7 @@ legend.Draw("same")
 
 canvas.Update()
 
-output_file = ROOT.TFile("combined_histograms_"+str(bins)+"_rebin.root", "RECREATE")
+output_file = ROOT.TFile("combined_histograms_"+str(bins)+"_rebin_phi.root", "RECREATE")
 canvas.Write()
 
 output_file.Close()

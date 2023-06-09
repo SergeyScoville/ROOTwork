@@ -3,6 +3,8 @@ import numpy as np
 
 # Create a canvas
 canvas = ROOT.TCanvas("canvas", "Histograms", 800, 600)
+canvas.SetLogy()
+canvas.Update()
 
 # Define the number of bins and range for the histograms
 nbins = 50
