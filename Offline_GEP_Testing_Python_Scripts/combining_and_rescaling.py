@@ -1,5 +1,5 @@
 """
-This is a Python script that is going to take in three root files and grab histograms from each, and then display them together on a new histogram. It is also going to scale them, by making the y axis be the ratio of events per bin/ total events, and move the x axis so that it is taking a good range.
+This is a Python script that is going to take in three root files and grab histograms from each, and then display them together on a new histogram. It is also going to scale them, by making the y axis be the ratio of events per bin/ total events, and move the x axis so that it is taking a good range. To run the file there are a few things to be careful of. The general format needs to be "python3 /path/to/combining_and_rescaling.py /path/to/file(s).root variable_to_plot integer_bins histogram_title --multifile --log". If you are taking from separate files that have Calo_422, Calo_420, and Calo_Cal each in them, you put three filepaths in the /path/to/file(s).root section and make sure to put --multifile in after the histogram_title. For variable to plot, your choices are N, eta, phi, et
 """
 
 import ROOT
@@ -8,16 +8,17 @@ from PIL import Image
 
 if "--multifile" in sys.argv:
     try:
-        bins = int(sys.argv[4])
+        bins = int(sys.argv[5])
     except IndexError:
         bins = 0
 else:
     try:
-        bins = int(sys.argv[2])
-    except IndexError:
+        bins = int(sys.argv[3])
+    except (IndexError, ValueError) as e:
         bins = 0
 
 if "--multifile" in sys.argv:
+    plotting = sys.argv[4]
     file1 = ROOT.TFile(sys.argv[1]) 
     file2 = ROOT.TFile(sys.argv[2])
     file3 = ROOT.TFile(sys.argv[3])
@@ -35,13 +36,13 @@ if "--multifile" in sys.argv:
     hist3 = file3.Get(histogram3_name)
 else:
     file = ROOT.TFile(sys.argv[1])
-
-    hist1 = file.Get("h_Calo422TopoClusters_et")
-    hist2 = file.Get("h_Calo420TopoClusters_et")
-    hist3 = file.Get("h_CaloCalTopoClusters_et")
+    plotting = sys.argv[2]
+    hist1 = file.Get("h_Calo422TopoClusters_"+sys.argv[2])
+    hist2 = file.Get("h_Calo420TopoClusters_"+sys.argv[2])
+    hist3 = file.Get("h_CaloCalTopoClusters_"+sys.argv[2])
     hist_legend_names = ["", "", ""]
 
-    hists = ["h_Calo422TopoClusters_N", "h_Calo420TopoClusters_N", "h_CaloCalTopoClusters_N"]
+    hists = ["h_Calo422TopoClusters_"+sys.argv[2], "h_Calo420TopoClusters_"+sys.argv[2], "h_CaloCalTopoClusters_"+sys.argv[2]]
 
 for i in range(len(hists)):
     if "Calo422" in hists[i]:
@@ -56,8 +57,18 @@ hist2.SetName(hist_legend_names[1])
 hist3.SetName(hist_legend_names[2])
 
 canvas = ROOT.TCanvas("canvas", "Histograms", 1200, 800)
-canvas.SetLogy()
+if "--log" in sys.argv:
+    canvas.SetLogy()
 canvas.Update()
+
+def get_save_file_name(filepath, bins, plotting):
+    full_filename = filepath.split("/")[-1]
+    filename = full_filename.split(".")[0]
+    if bins == 0:
+        return(filename+"_No_Rebin_"+plotting+"_dist")
+    else: 
+        return(filename+"_"+str(bins)+"_Rebin_"+plotting+"_dist")
+
 
 def find_divisors(number):
     divisors = []
@@ -84,8 +95,14 @@ def get_last_bin(histogram):
 
 def histogram_modifiers(individual_histograms, xmax, ymax, bins):
     for i in individual_histograms:
-        i.GetXaxis().SetRangeUser(0, xmax+50)
-        i.GetYaxis().SetRangeUser(1, 1.1*ymax)
+        if "eta" in sys.argv or "phi" in sys.argv:
+            i.GetXaxis().SetRangeUser(-1.1*xmax, 1.1*xmax)
+        else:
+            i.GetXaxis().SetRangeUser(0, 1.1*xmax)
+        if "--log" in sys.argv:
+            i.GetYaxis().SetRangeUser(1, 1.1*ymax)
+        else:
+            i.GetYaxis().SetRangeUser(0, 1.1*ymax)
         i.SetLineWidth(2)
     return
 
@@ -127,8 +144,10 @@ bin_options = find_divisors(hist1.GetNbinsX())
 if bins == 0:
     print("The options available to rebin your dataset are", str(bin_options), ". To rebin your dataset, add the integer you wish to end of command line prompt and it will divide the number of bins by this integer to give new binning.")
 
-
-
+"""
+hist1.SetBinContent(hist1.GetNbinsX() + 1, 0)
+hist2.SetBinContent(hist2.GetNbinsX() + 1, 0)
+hist3.SetBinContent(hist3.GetNbinsX() + 1, 0)"""
 
 set_y_axis_to_bin_ratio([hist1, hist2, hist3])
 
@@ -139,20 +158,6 @@ y_max = get_histograms_ymax([hist1, hist2, hist3], bins)
 
 histogram_modifiers([hist1, hist2, hist3], x_max, y_max, bins)
 
-#hist1.SetEntries(50)
-"""
-# Add the overflow to the last visible bin for each histogram
-last_bin1 = hist1.GetNbinsX()
-overflow_bin_content = hist1.GetBinContent(last_bin1 + 1)
-hist1.SetBinContent(last_bin1, hist1.GetBinContent(last_bin1) + overflow_bin_content)
-
-last_bin2 = hist2.GetNbinsX()
-overflow_bin_content = hist2.GetBinContent(last_bin2 + 1)
-hist2.SetBinContent(last_bin2, hist2.GetBinContent(last_bin2) + overflow_bin_content)
-
-last_bin3 = hist3.GetNbinsX()
-overflow_bin_content = hist3.GetBinContent(last_bin3 + 1)
-hist3.SetBinContent(last_bin3, hist3.GetBinContent(last_bin3) + overflow_bin_content)"""
 
 hist1.GetXaxis().SetTitle("Number of Topoclusters")
 hist1.GetXaxis().CenterTitle()
@@ -164,7 +169,6 @@ hist1.GetYaxis().SetTitleOffset(1.6)
 hist1.GetYaxis().SetNdivisions(-6, ROOT.kFALSE) # Removing minor tickmarks
 hist1.SetFillColorAlpha(ROOT.kBlue, 0.1)
 hist1.SetFillStyle(3144)
-hist1.Sumw2()
 
 
 hist1.Draw("hist")
@@ -179,7 +183,6 @@ stats_box1.SetY2NDC(0.95)  # Set Y-coordinate of the upper-right corner
 
 
 hist2.SetLineColor(ROOT.kRed)
-hist2.Sumw2()
 hist2.Draw("hist SAMES")
 hist2.SetFillColorAlpha(ROOT.kRed, 0.1)
 hist2.SetFillStyle(3490)
@@ -194,7 +197,6 @@ stats_box2.SetY1NDC(0.65)  # Set Y-coordinate of the lower-left corner
 stats_box2.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
 stats_box2.SetY2NDC(0.8)
 
-hist3.Sumw2()
 hist3.SetLineColor(ROOT.kGreen+2)
 hist3.Draw("hist SAMES")
 hist3.SetFillColorAlpha(ROOT.kGreen+2, 0.1)
@@ -208,7 +210,17 @@ stats_box3.SetY1NDC(0.5)  # Set Y-coordinate of the lower-left corner
 stats_box3.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
 stats_box3.SetY2NDC(0.65)
 
-hist1.SetTitle("Et distribution")
+if "--multifile" in sys.argv:
+    if bins == 0:
+        hist1.SetTitle(sys.argv[5].replace("_", " "))
+    else:
+        hist1.SetTitle(sys.argv[6].replace("_", " "))
+else:
+    if bins == 0:
+        hist1.SetTitle(sys.argv[3].replace("_", " "))
+    else:
+        hist1.SetTitle(sys.argv[4].replace("_", " "))
+
 canvas.SetName("All_GEP_Algo")
 canvas.Update()
 
@@ -228,10 +240,13 @@ hist2.GetXaxis().SetMaxDigits(4)
 hist3.GetXaxis().SetMaxDigits(4)
 canvas.Update()
 
-canvas.SaveAs("hist_Et0_"+str(bins)+"_rebin_et_dist.png")
-canvas.SaveSource("hist_Et0_"+str(bins)+"_rebin_et_dist.C")
 
-output_file = ROOT.TFile("combined_histograms_"+str(bins)+"_rebin.root", "RECREATE")
+canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots/"+get_save_file_name(sys.argv[1], bins, plotting)+"_5eta.png")
+canvas.SaveSource("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Source_Files/"+get_save_file_name(sys.argv[1], bins, plotting)+"_5eta.C")
+#canvas.SaveAs("hist_Et0_"+str(bins)+"_Rebin_N_dist.png")
+#canvas.SaveSource("hist_Et0_"+str(bins)+"_Rebin_N_dist.C")
+
+output_file = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/ROOT_files/"+get_save_file_name(sys.argv[1], bins, plotting)+".root", "RECREATE")
 canvas.Write()
 
 output_file.Close()
