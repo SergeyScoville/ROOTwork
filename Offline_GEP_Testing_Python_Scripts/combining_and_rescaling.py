@@ -4,6 +4,7 @@ This is a Python script that is going to take in three root files and grab histo
 
 import ROOT
 import sys
+from array import array
 from PIL import Image
 
 if "--multifile" in sys.argv:
@@ -42,6 +43,8 @@ else:
     hist3 = file.Get("h_CaloCalTopoClusters_"+sys.argv[2])
     hist_legend_names = ["", "", ""]
 
+    print(hist1.GetXaxis().GetXmin())
+    print(hist1.GetXaxis().GetXmax())
     hists = ["h_Calo422TopoClusters_"+sys.argv[2], "h_Calo420TopoClusters_"+sys.argv[2], "h_CaloCalTopoClusters_"+sys.argv[2]]
 
 for i in range(len(hists)):
@@ -95,7 +98,9 @@ def get_last_bin(histogram):
 
 def histogram_modifiers(individual_histograms, xmax, ymax, bins):
     for i in individual_histograms:
-        if "eta" in sys.argv or "phi" in sys.argv:
+        if "eta" in sys.argv:
+            i.GetXaxis().SetRangeUser(-5, 5)
+        elif "phi" in sys.argv:
             i.GetXaxis().SetRangeUser(-1.1*xmax, 1.1*xmax)
         else:
             i.GetXaxis().SetRangeUser(0, 1.1*xmax)
@@ -109,7 +114,7 @@ def histogram_modifiers(individual_histograms, xmax, ymax, bins):
 
 def get_histograms_ymax(individual_histograms, bins):
     histograms = individual_histograms
-    if bins != 0:
+    if bins != 0 and "eta" not in sys.argv:
         for i in histograms:
             i.Rebin(bins)
     y_max = 0
@@ -117,6 +122,30 @@ def get_histograms_ymax(individual_histograms, bins):
         if i.GetMaximum() > y_max:
             y_max = i.GetMaximum()
     return y_max
+
+
+def change_to_sixteen_bins(histograms, bin_edges):
+    new_histograms = []
+    num_bins_new = 16
+    for original_hist in histograms:
+        new_hist = ROOT.TH1F("new_hist", original_hist.GetTitle(), 16, array("d", bin_edges))
+        # Loop over the new histogram bins
+        # Loop over the bins in the original histogram
+        for i in range(1, new_hist.GetNbinsX() + 1):
+            # Get the bin center of the new histogram
+            bin_center = new_hist.GetBinCenter(i)
+    
+            # Find the corresponding bin index in the original histogram
+            orig_bin_index = original_hist.FindBin(bin_center)
+    
+            # Get the bin content from the original histogram
+            bin_content = original_hist.GetBinContent(orig_bin_index)
+    
+            # Set the bin content in the new histogram
+            new_hist.SetBinContent(i, bin_content)
+
+        new_histograms.append(new_hist)
+    return new_histograms
 
 
 def get_histograms_xmax(individuals_histograms):
@@ -158,6 +187,10 @@ y_max = get_histograms_ymax([hist1, hist2, hist3], bins)
 
 histogram_modifiers([hist1, hist2, hist3], x_max, y_max, bins)
 
+bin_edges = [-4.9, -4.2875, -3.675, -3.0625, -2.45, -1.8375, -1.225, -0.6125, 0.6125, 1.225, 1.8375, 2.45, 3.0625, 3.675, 4.2875, 4.9 ]
+
+if "eta" in sys.argv:
+    hist1, hist2, hist3 = change_to_sixteen_bins([hist1, hist2, hist3], bin_edges)
 
 hist1.GetXaxis().SetTitle("Number of Topoclusters")
 hist1.GetXaxis().CenterTitle()
@@ -198,17 +231,20 @@ stats_box2.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
 stats_box2.SetY2NDC(0.8)
 
 hist3.SetLineColor(ROOT.kGreen+2)
-hist3.Draw("hist SAMES")
-hist3.SetFillColorAlpha(ROOT.kGreen+2, 0.1)
 
-canvas.Update()
+third_histogram = False
+if "Cal" in get_save_file_name(sys.argv[1], bins, plotting):
+    hist3.Draw("hist SAMES")
+    hist3.SetFillColorAlpha(ROOT.kGreen+2, 0.1)
 
-stats_box3 = hist3.GetListOfFunctions().FindObject("stats")
-stats_box3.SetTextSize(0.025)
-stats_box3.SetX1NDC(0.8)  # Set X-coordinate of the lower-left corner
-stats_box3.SetY1NDC(0.5)  # Set Y-coordinate of the lower-left corner
-stats_box3.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
-stats_box3.SetY2NDC(0.65)
+    canvas.Update()
+
+    stats_box3 = hist3.GetListOfFunctions().FindObject("stats")
+    stats_box3.SetTextSize(0.025)
+    stats_box3.SetX1NDC(0.8)  # Set X-coordinate of the lower-left corner
+    stats_box3.SetY1NDC(0.5)  # Set Y-coordinate of the lower-left corner
+    stats_box3.SetX2NDC(0.95)  # Set X-coordinate of the upper-right corner
+    stats_box3.SetY2NDC(0.65)
 
 if "--multifile" in sys.argv:
     if bins == 0:
@@ -224,21 +260,17 @@ else:
 canvas.SetName("All_GEP_Algo")
 canvas.Update()
 
-legend = ROOT.TLegend(0.6,0.6,0.75,0.75)    # Add a legend near the top right corner
+legend = ROOT.TLegend(0.6,0.7,0.75,0.85)    # Add a legend near the top right corner
 legend.AddEntry(hist1,hist_legend_names[0])               # Add the MC histogram, labelled as "MC"
 legend.AddEntry(hist2,hist_legend_names[1])           # Add the data points, labelled as "Data"
-legend.AddEntry(hist3, hist_legend_names[2])
+if third_histogram:
+    legend.AddEntry(hist3, hist_legend_names[2])
 legend.SetTextSize(0.03)
 #legend.SetLineWidth(0)                      # Remove the boundary on the legend
 legend.Draw("same")  
 
 canvas.Update()
 ROOT.gEnv.SetValue("Hist.PictureCompress", 1)
-
-hist1.GetXaxis().SetMaxDigits(4)
-hist2.GetXaxis().SetMaxDigits(4)
-hist3.GetXaxis().SetMaxDigits(4)
-canvas.Update()
 
 
 canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots/"+get_save_file_name(sys.argv[1], bins, plotting)+"_5eta.png")
