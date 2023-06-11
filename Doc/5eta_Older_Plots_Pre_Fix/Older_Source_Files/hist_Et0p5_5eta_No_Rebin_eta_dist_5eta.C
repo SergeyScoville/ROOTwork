@@ -4,8 +4,8 @@
 void hist_Et0p5_5eta_No_Rebin_eta_dist_5eta()
 {
 //=========Macro generated from canvas: All_GEP_Algo/Histograms
-//=========  (Sat Jun 10 17:21:43 2023) by ROOT version 6.26/06
-   TCanvas *All_GEP_Algo = new TCanvas("All_GEP_Algo", "Histograms",0,53,1200,800);
+//=========  (Fri Jun  9 17:24:06 2023) by ROOT version 6.26/06
+   TCanvas *All_GEP_Algo = new TCanvas("All_GEP_Algo", "Histograms",2160,53,1200,800);
    All_GEP_Algo->SetHighLightColor(2);
    All_GEP_Algo->Range(-6.125,-0.01749029,6.125,0.1574126);
    All_GEP_Algo->SetFillColor(0);

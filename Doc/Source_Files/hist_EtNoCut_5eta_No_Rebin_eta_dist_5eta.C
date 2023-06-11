@@ -1,13 +1,13 @@
 #ifdef __CLING__
 #pragma cling optimize(0)
 #endif
-void hist_Et0p5_5eta_No_Rebin_eta_dist_5eta()
+void hist_EtNoCut_5eta_No_Rebin_eta_dist_5eta()
 {
 //=========Macro generated from canvas: All_GEP_Algo/Histograms
-//=========  (Sat Jun 10 17:21:43 2023) by ROOT version 6.26/06
+//=========  (Sat Jun 10 17:21:37 2023) by ROOT version 6.26/06
    TCanvas *All_GEP_Algo = new TCanvas("All_GEP_Algo", "Histograms",0,53,1200,800);
    All_GEP_Algo->SetHighLightColor(2);
-   All_GEP_Algo->Range(-6.125,-0.01749029,6.125,0.1574126);
+   All_GEP_Algo->Range(-6.125,-0.01706334,6.125,0.1535701);
    All_GEP_Algo->SetFillColor(0);
    All_GEP_Algo->SetBorderMode(0);
    All_GEP_Algo->SetBorderSize(2);
@@ -15,22 +15,22 @@ void hist_Et0p5_5eta_No_Rebin_eta_dist_5eta()
    All_GEP_Algo->SetFrameBorderMode(0);
    
    TH1F *Calo_422__1 = new TH1F("Calo_422__1","Number of Topoclusters as function of #eta",16,-4.9,4.9);
-   Calo_422__1->SetBinContent(1,0.003815143);
-   Calo_422__1->SetBinContent(2,0.006198657);
-   Calo_422__1->SetBinContent(3,0.01121582);
-   Calo_422__1->SetBinContent(4,0.01140513);
-   Calo_422__1->SetBinContent(5,0.1048624);
-   Calo_422__1->SetBinContent(6,0.1065784);
-   Calo_422__1->SetBinContent(7,0.1228958);
-   Calo_422__1->SetBinContent(8,0.1332593);
-   Calo_422__1->SetBinContent(9,0.1326009);
-   Calo_422__1->SetBinContent(10,0.1223492);
-   Calo_422__1->SetBinContent(11,0.1060356);
-   Calo_422__1->SetBinContent(12,0.09506457);
-   Calo_422__1->SetBinContent(13,0.02239515);
-   Calo_422__1->SetBinContent(14,0.01119757);
-   Calo_422__1->SetBinContent(15,0.006302816);
-   Calo_422__1->SetBinContent(16,0.003823506);
+   Calo_422__1->SetBinContent(1,0.002252761);
+   Calo_422__1->SetBinContent(2,0.003424288);
+   Calo_422__1->SetBinContent(3,0.006861016);
+   Calo_422__1->SetBinContent(4,0.008070319);
+   Calo_422__1->SetBinContent(5,0.1036233);
+   Calo_422__1->SetBinContent(6,0.1212755);
+   Calo_422__1->SetBinContent(7,0.1236305);
+   Calo_422__1->SetBinContent(8,0.1300064);
+   Calo_422__1->SetBinContent(9,0.1296563);
+   Calo_422__1->SetBinContent(10,0.1243939);
+   Calo_422__1->SetBinContent(11,0.1212653);
+   Calo_422__1->SetBinContent(12,0.09489328);
+   Calo_422__1->SetBinContent(13,0.01802439);
+   Calo_422__1->SetBinContent(14,0.006872533);
+   Calo_422__1->SetBinContent(15,0.003487402);
+   Calo_422__1->SetBinContent(16,0.002262896);
    Calo_422__1->SetEntries(100);
    
    TPaveStats *ptstats = new TPaveStats(0.8,0.8,0.95,0.95,"brNDC");
@@ -42,8 +42,8 @@ void hist_Et0p5_5eta_No_Rebin_eta_dist_5eta()
    ptstats->SetTextSize(0.025);
    TText *ptstats_LaTex = ptstats->AddText("Calo_422");
    ptstats_LaTex = ptstats->AddText("Entries = 100    ");
-   ptstats_LaTex = ptstats->AddText("Mean  = 0.008144");
-   ptstats_LaTex = ptstats->AddText("Std Dev   =  1.587");
+   ptstats_LaTex = ptstats->AddText("Mean  = 0.009636");
+   ptstats_LaTex = ptstats->AddText("Std Dev   =  1.508");
    ptstats->SetOptStat(1111);
    ptstats->SetOptFit(0);
    ptstats->Draw();
@@ -76,22 +76,22 @@ void hist_Et0p5_5eta_No_Rebin_eta_dist_5eta()
    Calo_422__1->Draw("hist");
    
    TH1F *Calo_420__2 = new TH1F("Calo_420__2","",16,-4.9,4.9);
-   Calo_420__2->SetBinContent(1,0.004332761);
-   Calo_420__2->SetBinContent(2,0.007511642);
-   Calo_420__2->SetBinContent(3,0.01346158);
-   Calo_420__2->SetBinContent(4,0.01447353);
-   Calo_420__2->SetBinContent(5,0.1268138);
-   Calo_420__2->SetBinContent(6,0.1060575);
-   Calo_420__2->SetBinContent(7,0.1108938);
-   Calo_420__2->SetBinContent(8,0.1157899);
-   Calo_420__2->SetBinContent(9,0.1153043);
-   Calo_420__2->SetBinContent(10,0.111387);
-   Calo_420__2->SetBinContent(11,0.1056899);
-   Calo_420__2->SetBinContent(12,0.1153636);
-   Calo_420__2->SetBinContent(13,0.02732717);
-   Calo_420__2->SetBinContent(14,0.01353933);
-   Calo_420__2->SetBinContent(15,0.007750358);
-   Calo_420__2->SetBinContent(16,0.004303942);
+   Calo_420__2->SetBinContent(1,0.003226042);
+   Calo_420__2->SetBinContent(2,0.004866779);
+   Calo_420__2->SetBinContent(3,0.009988027);
+   Calo_420__2->SetBinContent(4,0.01181471);
+   Calo_420__2->SetBinContent(5,0.1196219);
+   Calo_420__2->SetBinContent(6,0.1166408);
+   Calo_420__2->SetBinContent(7,0.1142414);
+   Calo_420__2->SetBinContent(8,0.1187839);
+   Calo_420__2->SetBinContent(9,0.1182099);
+   Calo_420__2->SetBinContent(10,0.1147744);
+   Calo_420__2->SetBinContent(11,0.1165351);
+   Calo_420__2->SetBinContent(12,0.1095964);
+   Calo_420__2->SetBinContent(13,0.02338498);
+   Calo_420__2->SetBinContent(14,0.01003168);
+   Calo_420__2->SetBinContent(15,0.005042245);
+   Calo_420__2->SetBinContent(16,0.003241755);
    Calo_420__2->SetEntries(100);
    
    ptstats = new TPaveStats(0.8,0.65,0.95,0.8,"brNDC");
@@ -103,8 +103,8 @@ void hist_Et0p5_5eta_No_Rebin_eta_dist_5eta()
    ptstats->SetTextSize(0.025);
    ptstats_LaTex = ptstats->AddText("Calo_420");
    ptstats_LaTex = ptstats->AddText("Entries = 100    ");
-   ptstats_LaTex = ptstats->AddText("Mean  = 0.0117");
-   ptstats_LaTex = ptstats->AddText("Std Dev   =  1.693");
+   ptstats_LaTex = ptstats->AddText("Mean  = 0.01147");
+   ptstats_LaTex = ptstats->AddText("Std Dev   =  1.614");
    ptstats->SetOptStat(1111);
    ptstats->SetOptFit(0);
    ptstats->Draw();
@@ -129,6 +129,59 @@ void hist_Et0p5_5eta_No_Rebin_eta_dist_5eta()
    Calo_420__2->GetZaxis()->SetTitleFont(42);
    Calo_420__2->Draw("hist SAMES");
    
+   TH1F *Calo_Cal__3 = new TH1F("Calo_Cal__3","",16,-4.9,4.9);
+   Calo_Cal__3->SetBinContent(1,0.003206687);
+   Calo_Cal__3->SetBinContent(2,0.004799545);
+   Calo_Cal__3->SetBinContent(3,0.009770783);
+   Calo_Cal__3->SetBinContent(4,0.0117896);
+   Calo_Cal__3->SetBinContent(5,0.1191175);
+   Calo_Cal__3->SetBinContent(6,0.1167758);
+   Calo_Cal__3->SetBinContent(7,0.1145665);
+   Calo_Cal__3->SetBinContent(8,0.1191673);
+   Calo_Cal__3->SetBinContent(9,0.1185613);
+   Calo_Cal__3->SetBinContent(10,0.1151336);
+   Calo_Cal__3->SetBinContent(11,0.1166006);
+   Calo_Cal__3->SetBinContent(12,0.1092366);
+   Calo_Cal__3->SetBinContent(13,0.02327557);
+   Calo_Cal__3->SetBinContent(14,0.009835877);
+   Calo_Cal__3->SetBinContent(15,0.004939783);
+   Calo_Cal__3->SetBinContent(16,0.003222851);
+   Calo_Cal__3->SetEntries(100);
+   
+   ptstats = new TPaveStats(0.8,0.5,0.95,0.65,"brNDC");
+   ptstats->SetName("stats");
+   ptstats->SetBorderSize(1);
+   ptstats->SetFillColor(0);
+   ptstats->SetTextAlign(12);
+   ptstats->SetTextFont(42);
+   ptstats->SetTextSize(0.025);
+   ptstats_LaTex = ptstats->AddText("Calo_Cal");
+   ptstats_LaTex = ptstats->AddText("Entries = 100    ");
+   ptstats_LaTex = ptstats->AddText("Mean  = 0.0114");
+   ptstats_LaTex = ptstats->AddText("Std Dev   =   1.61");
+   ptstats->SetOptStat(1111);
+   ptstats->SetOptFit(0);
+   ptstats->Draw();
+   Calo_Cal__3->GetListOfFunctions()->Add(ptstats);
+   ptstats->SetParent(Calo_Cal__3);
+
+   ci = 1181;
+   color = new TColor(ci, 0, 0.6, 0, " ", 0.1);
+   Calo_Cal__3->SetFillColor(ci);
+
+   ci = TColor::GetColor("#009900");
+   Calo_Cal__3->SetLineColor(ci);
+   Calo_Cal__3->SetLineWidth(3);
+   Calo_Cal__3->GetXaxis()->SetLabelFont(42);
+   Calo_Cal__3->GetXaxis()->SetTitleOffset(1);
+   Calo_Cal__3->GetXaxis()->SetTitleFont(42);
+   Calo_Cal__3->GetYaxis()->SetLabelFont(42);
+   Calo_Cal__3->GetYaxis()->SetTitleFont(42);
+   Calo_Cal__3->GetZaxis()->SetLabelFont(42);
+   Calo_Cal__3->GetZaxis()->SetTitleOffset(1);
+   Calo_Cal__3->GetZaxis()->SetTitleFont(42);
+   Calo_Cal__3->Draw("hist SAMES");
+   
    TPaveText *pt = new TPaveText(0.177813,0.9377097,0.822187,0.995,"blNDC");
    pt->SetName("title");
    pt->SetBorderSize(0);
@@ -138,7 +191,7 @@ void hist_Et0p5_5eta_No_Rebin_eta_dist_5eta()
    TText *pt_LaTex = pt->AddText("Number of Topoclusters as function of #eta");
    pt->Draw();
    
-   TLegend *leg = new TLegend(0.8,0.5,0.92,0.62,NULL,"brNDC");
+   TLegend *leg = new TLegend(0.8,0.3,0.92,0.42,NULL,"brNDC");
    leg->SetBorderSize(1);
    leg->SetTextSize(0.03);
    leg->SetLineColor(1);
@@ -169,6 +222,21 @@ void hist_Et0p5_5eta_No_Rebin_eta_dist_5eta()
    entry->SetFillStyle(3490);
 
    ci = TColor::GetColor("#ff0000");
+   entry->SetLineColor(ci);
+   entry->SetLineStyle(1);
+   entry->SetLineWidth(3);
+   entry->SetMarkerColor(1);
+   entry->SetMarkerStyle(1);
+   entry->SetMarkerSize(1);
+   entry->SetTextFont(42);
+   entry=leg->AddEntry("Calo_Cal","Calo_Cal","lpf");
+
+   ci = 1181;
+   color = new TColor(ci, 0, 0.6, 0, " ", 0.1);
+   entry->SetFillColor(ci);
+   entry->SetFillStyle(1001);
+
+   ci = TColor::GetColor("#009900");
    entry->SetLineColor(ci);
    entry->SetLineStyle(1);
    entry->SetLineWidth(3);
