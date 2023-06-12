@@ -38,13 +38,10 @@ if "--multifile" in sys.argv:
 else:
     file = ROOT.TFile(sys.argv[1])
     plotting = sys.argv[2]
-    hist1 = file.Get("h_Calo422TopoClusters_"+sys.argv[2])
-    hist2 = file.Get("h_Calo420TopoClusters_"+sys.argv[2])
-    hist3 = file.Get("h_CaloCalTopoClusters_"+sys.argv[2])
+    hist1 = file.Get("h_Calo422SKTopoClusters_"+sys.argv[2])
+    hist2 = file.Get("h_Calo420SKTopoClusters_"+sys.argv[2])
+    hist3 = file.Get("h_CaloCalSKTopoClusters_"+sys.argv[2])
     hist_legend_names = ["", "", ""]
-
-    print(hist1.GetXaxis().GetXmin())
-    print(hist1.GetXaxis().GetXmax())
     hists = ["h_Calo422TopoClusters_"+sys.argv[2], "h_Calo420TopoClusters_"+sys.argv[2], "h_CaloCalTopoClusters_"+sys.argv[2]]
 
 for i in range(len(hists)):
@@ -135,7 +132,6 @@ def change_to_sixteen_bins(histograms, bin_edges):
             new_bin = new_hist.FindBin(original_hist.GetBinCenter(i))
             new_hist.SetBinContent(new_bin, new_hist.GetBinContent(new_bin) + original_hist.GetBinContent(i))
 
-
         new_histograms.append(new_hist)
     return new_histograms
 
@@ -159,11 +155,17 @@ def set_y_axis_to_bin_ratio(all_histograms):
             histogram.SetBinContent(i, ratio)  # Update the bin content
             histogram.SetBinError(i, 0)  # Set the bin error to zero
 
-
+histogram_total = []
+for i in [hist1, hist2, hist3]:
+    histogram_total.append(i.GetEntries())
+print(histogram_total)
 
 bin_options = find_divisors(hist1.GetNbinsX())
 if bins == 0:
     print("The options available to rebin your dataset are", str(bin_options), ". To rebin your dataset, add the integer you wish to end of command line prompt and it will divide the number of bins by this integer to give new binning.")
+
+bin_edges = [-4.9, -4.2875, -3.675, -3.0625, -2.45, -1.8375, -1.225, -0.6125, 0.6125, 1.225, 1.8375, 2.45, 3.0625, 3.675, 4.2875, 4.9 ]
+
 
 """
 hist1.SetBinContent(hist1.GetNbinsX() + 1, 0)
@@ -179,10 +181,11 @@ y_max = get_histograms_ymax([hist1, hist2, hist3], bins)
 
 histogram_modifiers([hist1, hist2, hist3], x_max, y_max, bins)
 
-bin_edges = [-4.9, -4.2875, -3.675, -3.0625, -2.45, -1.8375, -1.225, -0.6125, 0.6125, 1.225, 1.8375, 2.45, 3.0625, 3.675, 4.2875, 4.9 ]
-
 if "eta" in sys.argv:
     hist1, hist2, hist3 = change_to_sixteen_bins([hist1, hist2, hist3], bin_edges)
+    x_max = get_histograms_xmax([hist1, hist2, hist3])
+    y_max = get_histograms_ymax([hist1, hist2, hist3], bins)
+    histogram_modifiers([hist1, hist2, hist3], x_max, y_max, 16)
     hist1.GetXaxis().SetTitle("#eta")
     hist1.GetYaxis().SetTitle("Fraction of topoclusters")
 elif "N" in sys.argv:
@@ -191,6 +194,7 @@ elif "N" in sys.argv:
 elif "et" in sys.argv:
     hist1.GetXaxis().SetTitle("E_{t} [MeV]")
     hist1.GetYaxis().SetTitle("Fraction of Topoclusters")
+hist1.SetEntries(histogram_total[0])
 hist1.GetXaxis().CenterTitle()
 hist1.GetXaxis().SetTitleOffset(1.2)
 hist1.GetYaxis().CenterTitle()
@@ -199,6 +203,7 @@ hist1.GetYaxis().SetTitleOffset(1.55)
 hist1.SetFillColorAlpha(ROOT.kBlue, 0.1)
 hist1.SetFillStyle(3144)
 hist1.SetLineWidth(3)
+
 
 hist1.Draw("hist")
 canvas.Update()
@@ -216,7 +221,7 @@ hist2.Draw("hist SAMES")
 hist2.SetFillColorAlpha(ROOT.kRed, 0.1)
 hist2.SetFillStyle(3490)
 hist2.SetLineWidth(3)
-
+hist2.SetEntries(histogram_total[1])
 
 canvas.Update()
 
@@ -234,6 +239,7 @@ if "NoCut" in get_save_file_name(sys.argv[1], bins, plotting):
     third_histogram = True
     hist3.Draw("hist SAMES")
     hist3.SetFillColorAlpha(ROOT.kGreen+2, 0.1)
+    hist3.SetEntries(histogram_total[2])
 
     canvas.Update()
 
@@ -275,12 +281,11 @@ canvas.Update()
 ROOT.gEnv.SetValue("Hist.PictureCompress", 1)
 
 
-canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots/"+get_save_file_name(sys.argv[1], bins, plotting)+"_5eta.png")
-canvas.SaveSource("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Source_Files/"+get_save_file_name(sys.argv[1], bins, plotting)+"_5eta.C")
-#canvas.SaveAs("hist_Et0_"+str(bins)+"_Rebin_N_dist.png")
-#canvas.SaveSource("hist_Et0_"+str(bins)+"_Rebin_N_dist.C")
+canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots/Plots_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_5eta_SK.png")
+canvas.SaveSource("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Source_Files/Source_Files_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_5eta_SK.C")
 
-output_file = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/ROOT_files/"+get_save_file_name(sys.argv[1], bins, plotting)+".root", "RECREATE")
+
+output_file = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/ROOT_files/ROOT_Files_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK.root", "RECREATE")
 canvas.Write()
 
 output_file.Close()
