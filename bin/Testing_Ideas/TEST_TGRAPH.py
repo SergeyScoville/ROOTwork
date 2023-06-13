@@ -22,16 +22,16 @@ eta_min, eta_max = -4, 4
 phi_min, phi_max = -3.5, 3.5
 
 # Loop over the data and fill the graph
-for i in data:
+for i in range(len(data)):
 
     # Calculate the marker size proportional to the number of events
-    marker_size = 0.01 * i[2]
+    marker_size = 0.01 * data[i][2]
     print(marker_size)
 
     # Add a point to the graph at the intersection of eta and phi with the marker size
     point_index = graph.GetN()
-    graph.SetPoint(point_index, i[0], i[1])
-    graph.SetMarkerSize(marker_size)
+    graph.SetPoint(point_index, data[i][0], data[i][1])
+    graph.SetMarkerSize(i, marker_size)
     graph.SetMarkerStyle(ROOT.kFullCircle)
 
 # Set the axis titles
