@@ -5,7 +5,7 @@ This is a Python script that is going to take in three root files and grab histo
 import ROOT
 import sys
 from array import array
-from PIL import Image
+
 
 if "--multifile" in sys.argv:
     try:
@@ -17,6 +17,11 @@ else:
         bins = int(sys.argv[3])
     except (IndexError, ValueError) as e:
         bins = 0
+
+ROOT.gROOT.LoadMacro("AtlasStyle.C") 
+SetAtlasStyle()
+ATLASLabel(0.2, 0.87, "Internal")
+
 
 if "--multifile" in sys.argv:
     plotting = sys.argv[4]
@@ -152,6 +157,7 @@ def set_y_axis_to_event_fraction(histograms):
     hist_names = ["h_Calo422TopoClusters_N", "h_Calo420TopoClusters_N", "h_CaloCalTopoClusters_N"] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
     for i in range(len(hists)):
         hist1_n = file.Get(hist_names[i])
+        print(hist1_n.GetEntries(), hist_names[i])
         hists[i].Scale(1/hist1_n.GetEntries())
     return hists[0], hists[1], hists[2]
 
@@ -206,7 +212,7 @@ y_max = get_histograms_ymax([hist1, hist2, hist3], bins)
 histogram_modifiers([hist1, hist2, hist3], x_max, y_max, bins)
 
 if "eta" in sys.argv:
-    hist1, hist2, hist3 = change_to_sixteen_bins([hist1, hist2, hist3], bin_edges)
+    # hist1, hist2, hist3 = change_to_sixteen_bins([hist1, hist2, hist3], bin_edges) ##
     x_max = get_histograms_xmax([hist1, hist2, hist3])
     y_max = get_histograms_ymax([hist1, hist2, hist3], bins)
     if "NoCut" in get_save_file_name(sys.argv[1], bins, plotting):
@@ -215,7 +221,7 @@ if "eta" in sys.argv:
         real_maximum = get_eta_maximum([hist1, hist2])
     histogram_modifiers([hist1, hist2, hist3], x_max, real_maximum, 16)
     hist1.GetXaxis().SetTitle("#eta")
-    hist1.GetYaxis().SetTitle("Fraction of topoclusters")
+    hist1.GetYaxis().SetTitle("Number of topoclusters/# events")
     bin_width = 0.6125
     num_ticks = int(hist1.GetXaxis().GetXmax() / bin_width)
     hist1.GetXaxis().SetNdivisions(16, False)
@@ -238,6 +244,7 @@ hist1.SetFillColorAlpha(ROOT.kBlue, 0.1)
 hist1.SetFillStyle(3144)
 hist1.SetLineWidth(3)
 hist1.Sumw2()
+hist1.SetStats(0)
 
 hist1.Draw("hist")
 canvas.Update()
@@ -274,7 +281,7 @@ if "eta" in sys.argv:
         line.SetLineColor(ROOT.kRed) 
         line.DrawLine(bin_edges[i], bin_height, bin_edges[i+1], bin_height)
         canvas.Update()
-    hist2.Draw("sames")
+    hist2.Draw("same")
     hist2.SetEntries(histogram_total[1])
     hist2.SetLineWidth(0)
     canvas.Update()
@@ -285,7 +292,7 @@ else:
     hist2.SetFillStyle(3490)
     hist2.SetLineWidth(3)
     hist2.SetEntries(histogram_total[1])
-    hist2.Draw("hist sames")
+    hist2.Draw("hist same")
     canvas.Update()
 
 stats_box2 = hist2.GetListOfFunctions().FindObject("stats")
@@ -308,14 +315,14 @@ if "NoCut" in get_save_file_name(sys.argv[1], bins, plotting):
             line3.SetLineColor(ROOT.kGreen) 
             line3.DrawLine(bin_edges[i], bin_height3, bin_edges[i+1], bin_height3)
             canvas.Update()
-        hist3.Draw("sames")
+        hist3.Draw("same")
         hist3.SetEntries(histogram_total[2])
         hist3.SetLineWidth(0)
         canvas.Update()
         third_histogram = True
     else:
         third_histogram = True
-        hist3.Draw("hist SAMES")
+        hist3.Draw("hist SAME")
         hist3.SetFillColorAlpha(ROOT.kGreen+2, 0.1)
         hist3.SetEntries(histogram_total[2])
         hist3.SetLineWidth(3)
