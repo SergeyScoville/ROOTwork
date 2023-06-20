@@ -128,15 +128,15 @@ for i in range(len(hists)):
 
 
 #Temporary code for Rajat plots
-
+"""
 hist1 = file.Get("h_Calo422SKclusters_et")
 hist2 = file.Get("h_Calo422SKTopoClusters_et")
 hist3 = file.Get("h_Calo422TopoClusters_et")
 
 hist1.SetName("422-Global SK")
-hist2.SetName("422-Offline SK")
-#hist1.SetName(hist_legend_names[0]) # Change for temporary code
-#hist2.SetName(hist_legend_names[1]) # Change for temporary code
+hist2.SetName("422-Offline SK")"""
+hist1.SetName(hist_legend_names[0]) # Change for temporary code
+hist2.SetName(hist_legend_names[1]) # Change for temporary code
 hist3.SetName(hist_legend_names[2])
 
 canvas = ROOT.TCanvas("canvas", "Histograms", 1200, 800)
@@ -186,12 +186,14 @@ def histogram_modifiers(individual_histograms, xmax, ymax, bins, etcut):
         else:
             i.GetXaxis().SetRangeUser(0, 1.1*xmax)
         if "--log" in sys.argv:
-            if "--sk" in sys.argv:
+            if "--ski" in sys.argv:
                 i.GetYaxis().SetRangeUser(2*10**(-4), 1.25*ymax)
-            elif etcut == "NoCUT"or etcut == "0.5":
-                i.GetYaxis().SetRangeUser(1*10**(-4), 1.25*ymax)
-            elif etcut == "2.0":
-                i.GetYaxis().SetRangeUser(1*10**(-4), 1.25*ymax)
+            #elif etcut == "NoCUT"or etcut == "0.5":
+                #i.GetYaxis().SetRangeUser(1*10**(-4), 1.25*ymax)
+            #elif etcut == "2.0":
+                #i.GetYaxis().SetRangeUser(1*10**(-4), 1.25*ymax)
+            elif "N" in sys.argv and "--sk" not in sys.argv:
+                i.GetYaxis().SetRangeUser(1*10**(-5), 2)
             else:
                 i.GetYaxis().SetRangeUser(5*10**(-5), 1.25*ymax)
         else:
@@ -381,7 +383,7 @@ if "eta" in sys.argv:
     hist1.GetXaxis().SetTickLength(0.02)
 elif "N" in sys.argv:
     hist1.GetXaxis().SetTitle("Number of Topoclusters")
-    hist1.GetYaxis().SetTitle("Fraction of Events")
+    hist1.GetYaxis().SetTitle("Fraction of Events/4 TC")
 elif "et" in sys.argv:
     hist1.GetXaxis().SetTitle("E_{t} [MeV]")
     hist1.GetYaxis().SetTitle("Fraction of Topoclusters")
@@ -399,13 +401,14 @@ hist1.SetFillColorAlpha(ROOT.kBlue, 0.1)
 hist1.SetFillStyle(3144)
 hist1.SetLineWidth(2)
 hist1.Sumw2()
+#hist1 = hist1.GetCumulative(ROOT.kFALSE)
 #hist1.SetStats(0)
 
 hist1.Draw("hist")
 canvas.Update()
 
 longstring = "#text[72]{Atlas} #text[42]{Simuation Internal}"
-
+"""
 if "eta" in sys.argv:
     starting = 0.19
 elif "N" in sys.argv:
@@ -420,7 +423,9 @@ elif "N" in sys.argv:
         else:
             starting = 0.6
 else:
-    starting = 0.35
+    starting = 0.35"""
+
+starting = 0.6
 t = ROOT.TLatex()
 
 if "eta" in sys.argv:
@@ -513,6 +518,7 @@ else:
     #hist2.SetFillColorAlpha(ROOT.kRed, 0.1)
     #hist2.SetFillStyle(3490)
     hist2.SetLineWidth(2)
+    #hist2 = hist2.GetCumulative(ROOT.kFALSE)
     hist2.SetEntries(histogram_total[1])
     hist2.Draw("hist same")
     canvas.Update()
@@ -528,7 +534,7 @@ hist3.SetLineColor(ROOT.kGreen+2)
 
 hist3.Sumw2()
 third_histogram = False
-if "NoCuts" in get_save_file_name(sys.argv[1], bins, plotting):
+if "NoCut" in get_save_file_name(sys.argv[1], bins, plotting):
     if "eta" in sys.argv:
         for i in range(0, hist3.GetNbinsX()):
             bin_height3 = hist3.GetBinContent(i+1)
@@ -544,10 +550,12 @@ if "NoCuts" in get_save_file_name(sys.argv[1], bins, plotting):
         third_histogram = True
     else:
         third_histogram = True
-        hist3.Draw("hist SAME")
-        hist3.SetFillColorAlpha(ROOT.kGreen-2, 0.1)
-        hist3.SetEntries(histogram_total[2])
         hist3.SetLineWidth(2)
+        #hist3 = hist3.GetCumulative(ROOT.kFALSE)
+        hist3.Draw("hist SAME")
+        #hist3.SetFillColorAlpha(ROOT.kGreen-2, 0.1)
+        
+        hist3.SetEntries(histogram_total[2])
 
         canvas.Update()
 """
@@ -564,16 +572,21 @@ canvas.Update()
 
 
 if third_histogram:
-    legend = ROOT.TLegend(0.8, 0.4, 0.92, 0.52)
+    legend = ROOT.TLegend(0.8, 0.5, 0.91, 0.62)
+elif "2.0" in sys.argv or "1.5" in sys.argv:
+    legend = ROOT.TLegend(.7, 0.5, 0.81, 0.62)
+elif "1.0" in sys.argv:
+    legend = ROOT.TLegend(.7, 0.5, 0.81, 0.62)
+    #legend = ROOT.TLegend(0.2, 0.3, 0.31, 0.42)
 else:
-    legend = ROOT.TLegend(0.7,0.5,0.92,0.62)    # Add a legend near the top right corner
-#legend.AddEntry(hist1,hist_legend_names[0]) 
-legend.AddEntry(hist1, "422-Global SK")
+    legend = ROOT.TLegend(0.2,0.5,0.31,0.62)    # Add a legend near the top right corner
+legend.AddEntry(hist1,hist_legend_names[0].replace("_", " ")) 
+#legend.AddEntry(hist1, "422-Global SK")
 if "eta" in sys.argv:              
     legend.AddEntry(line,hist_legend_names[1], "l")
 else:
-    #legend.AddEntry(hist2,hist_legend_names[1], "l") 
-    legend.AddEntry(hist2, "422-Offline SK")          
+    legend.AddEntry(hist2,hist_legend_names[1].replace("_", " "), "l") 
+    #legend.AddEntry(hist2, "422-Offline SK")          
 if third_histogram and "eta" in sys.argv:
     legend.AddEntry(line3, hist_legend_names[2], "l")
 elif third_histogram:
@@ -595,10 +608,10 @@ if "--sk" in sys.argv:
         output_file = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/ROOT_files/ROOT_Files_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK_overflow.root", "RECREATE")
         canvas.Write() 
     else:
-        canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots/Plots_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK_OnOff_422.png")
-        canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots_PDFs/Plots_PDFS_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK_OnOff_422.pdf")
-        canvas.SaveSource("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Source_Files/Source_Files_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK_OnOff_422.C")
-        output_file = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/ROOT_files/ROOT_Files_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK_OnOff_422.root", "RECREATE")
+        canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots/Plots_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK_NLOG.png")
+        canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots_PDFs/Plots_PDFS_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK_NLOG.pdf")
+        canvas.SaveSource("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Source_Files/Source_Files_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK_NLOG.C")
+        output_file = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/ROOT_files/ROOT_Files_w_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_SK_NLOG.root", "RECREATE")
         canvas.Write()
 else:
     if "--overflow" in sys.argv:
@@ -608,10 +621,10 @@ else:
         output_file = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/ROOT_files/ROOT_Files_No_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_overflow.root", "RECREATE")
         canvas.Write() 
     else:
-        canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots/Plots_No_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+".png")
-        canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots_PDFs/Plots_PDFs_No_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+".pdf") 
-        canvas.SaveSource("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Source_Files/Source_Files_No_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+".C")
-        output_file = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/ROOT_files/ROOT_Files_No_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+".root", "RECREATE")
+        canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots/Plots_No_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_NLOG_CD.png")
+        canvas.SaveAs("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Plots_PDFs/Plots_PDFs_No_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_NLOG_CD.pdf") 
+        canvas.SaveSource("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/Source_Files/Source_Files_No_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_NLOG_CD.C")
+        output_file = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/ROOT_files/ROOT_Files_No_SK/"+get_save_file_name(sys.argv[1], bins, plotting)+"_NLOG_CD.root", "RECREATE")
         canvas.Write()
 
 output_file.Close()
