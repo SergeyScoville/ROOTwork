@@ -28,7 +28,7 @@ def apply_atlas_style():
     #use large fonts
     #Int_tfont=72#Helveticaitalics
     font=42 #Helvetica
-    tsize=0.05
+    tsize=0.1
     AtlasStyle.SetTextFont(font)
     AtlasStyle.SetTextSize(tsize)
     AtlasStyle.SetLabelFont(font,"x")
@@ -62,7 +62,7 @@ def apply_atlas_style():
     AtlasStyle.SetPadTickX(1)
     AtlasStyle.SetPadTickY(1)
 
-    ROOT.gROOT.SetStyle("AtlasStyle")
+    return AtlasStyle
 
 
 def get_save_file_name(filepath, bins, plotting):
@@ -101,7 +101,7 @@ def N_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     for i in individual_histograms:
         i.GetXaxis().SetRangeUser(0, 1.1*xmax)
         if logarithm:
-            i.GetYaxis().SetRangeUser(1*10**(-5), 2)
+            i.GetYaxis().SetRangeUser(1*10**(-5), 10)
         else:
             i.GetYaxis().SetRangeUser(0, 1.1*ymax)
     return
@@ -170,7 +170,7 @@ def change_to_sixteen_bins(histograms, bin_edges):
     return new_histograms
 
 
-def set_y_axis_to_event_fraction(histograms):
+def set_y_axis_to_event_fraction(file, histograms):
     hists = histograms
     histogram_entries = []
     if "--sk" in sys.argv:
@@ -185,7 +185,7 @@ def set_y_axis_to_event_fraction(histograms):
     return hists[0], hists[1], hists[2], histogram_entries
 
 
-def get_histogram_num_entries(histograms):
+def get_histogram_num_entries(file, histograms):
     if "--sk" in sys.argv:
         hist_names = ["h_Calo422SKclusters_N", "h_Calo420SKclusters_N", "h_CaloCalSKclusters_N"] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
     else:
@@ -229,60 +229,61 @@ def overflow_bin_set(all_histograms):
 
 
 def write_ATLAS(starting):
-    pave = ROOT.TPaveText(starting+0.005, 0.87, starting+0.075, 0.91, "NDC")
+    pave = ROOT.TPaveText(starting-.005, 0.85, starting+0.1, 0.9, "NDC")
     pave.SetFillColor(ROOT.kWhite)
     pave.SetFillStyle(1001)  # Solid fill style
     pave.SetTextFont(72)
     pave.SetBorderSize(0)
     pave.SetShadowColor(ROOT.kWhite)
-    pave.SetTextSize(0.03)
+    pave.SetTextSize(0.05)
     pave.AddText("ATLAS")
     return pave
 
 
 def write_sim_internal(starting):
-    pave1 = ROOT.TPaveText(starting+0.075, 0.87, starting+0.23, 0.91, "NDC")
+    #pave1 = ROOT.TPaveText(starting+0.075, 0.87, starting+0.23, 0.91, "NDC")
+    pave1 = ROOT.TPaveText(starting+.1005, 0.85, starting+0.355, 0.9, "NDC")
     pave1.SetFillColor(ROOT.kWhite)
     pave1.SetFillStyle(1001)
     pave1.SetTextFont(42)
     pave1.SetBorderSize(0)
     pave1.SetShadowColor(ROOT.kWhite)
-    pave1.SetTextSize(0.03)
+    pave1.SetTextSize(0.05)
     pave1.AddText("Simulation Internal")
     return pave1
 
 
 def write_HL(starting):
-    pave2 = ROOT.TPaveText(starting, 0.83, starting+.16, 0.87, "NDC")
+    pave2 = ROOT.TPaveText(starting-.005, 0.8, starting+.232, 0.85, "NDC")
     pave2.SetFillColor(ROOT.kWhite)
     pave2.SetFillStyle(1001)
     pave2.SetTextFont(42)
     pave2.SetBorderSize(0)
     pave2.SetShadowColor(ROOT.kWhite)
-    pave2.SetTextSize(0.03)
+    pave2.SetTextSize(0.05)
     pave2.AddText("HL-LHC <#mu>=200")
     return pave2
 
 
 def write_min_bias(starting):
-    pave3 = ROOT.TPaveText(starting, 0.79, starting+.133, 0.83, "NDC")
+    pave3 = ROOT.TPaveText(starting-.005, 0.76, starting+.185, 0.81, "NDC")
     pave3.SetFillColor(ROOT.kWhite)
     pave3.SetFillStyle(1001)
     pave3.SetTextFont(42)
     pave3.SetBorderSize(0)
     pave3.SetShadowColor(ROOT.kWhite)
-    pave3.SetTextSize(0.03)
+    pave3.SetTextSize(0.05)
     pave3.AddText("Minimum Bias")
     return pave3
 
 
 def write_ET_cut(starting, cut):
-    pave4 = ROOT.TPaveText(starting, 0.75, starting+0.094, 0.79, "NDC")
+    pave4 = ROOT.TPaveText(starting-.005, 0.71, starting+0.115, 0.76, "NDC")
     pave4.SetFillColor(ROOT.kWhite)
     pave4.SetFillStyle(1001)
     pave4.SetTextFont(42)
     pave4.SetBorderSize(0)
     pave4.SetShadowColor(ROOT.kWhite)
-    pave4.SetTextSize(0.03)
+    pave4.SetTextSize(0.05)
     pave4.AddText("E_{T}^{TC} > "+cut)
     return pave4
