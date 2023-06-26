@@ -101,7 +101,20 @@ def N_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     for i in individual_histograms:
         i.GetXaxis().SetRangeUser(0, 1.1*xmax)
         if logarithm:
-            i.GetYaxis().SetRangeUser(1*10**(-5), 10)
+            i.GetYaxis().SetRangeUser(1*10**(-5), 5)
+        else:
+            i.GetYaxis().SetRangeUser(0, 1.1*ymax)
+    return
+
+
+def ET_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
+    for i in individual_histograms:
+        i.GetXaxis().SetRangeUser(0, xmax)
+        if logarithm:
+            if "--sk" in sys.argv:
+                i.GetYaxis().SetRangeUser(2*10**(-4), 1.25*ymax)
+            else:
+                i.GetYaxis().SetRangeUser(5*10**(-5), 1.25*ymax)
         else:
             i.GetYaxis().SetRangeUser(0, 1.1*ymax)
     return
@@ -110,8 +123,8 @@ def N_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
 def histogram_modifiers(individual_histograms, xmax, ymax, bins, etcut):
     for i in individual_histograms:
         if "eta" in sys.argv:
-            #i.GetXaxis().SetRangeUser(-4.9, 4.9)
-            i.GetXaxis().SetRange(1, 16)
+            i.GetXaxis().SetRangeUser(-4.9, 4.9)
+            #i.GetXaxis().SetRange(1, 16)
         elif "phi" in sys.argv:
             i.GetXaxis().SetRangeUser(-1.1*xmax, 1.1*xmax)
         else:
@@ -228,62 +241,59 @@ def overflow_bin_set(all_histograms):
     return
 
 
-def write_ATLAS(starting):
-    pave = ROOT.TPaveText(starting-.005, 0.85, starting+0.1, 0.9, "NDC")
-    pave.SetFillColor(ROOT.kWhite)
-    pave.SetFillStyle(1001)  # Solid fill style
-    pave.SetTextFont(72)
-    pave.SetBorderSize(0)
-    pave.SetShadowColor(ROOT.kWhite)
-    pave.SetTextSize(0.05)
-    pave.AddText("ATLAS")
-    return pave
-
-
-def write_sim_internal(starting):
-    #pave1 = ROOT.TPaveText(starting+0.075, 0.87, starting+0.23, 0.91, "NDC")
-    pave1 = ROOT.TPaveText(starting+.1005, 0.85, starting+0.355, 0.9, "NDC")
-    pave1.SetFillColor(ROOT.kWhite)
-    pave1.SetFillStyle(1001)
-    pave1.SetTextFont(42)
-    pave1.SetBorderSize(0)
-    pave1.SetShadowColor(ROOT.kWhite)
-    pave1.SetTextSize(0.05)
-    pave1.AddText("Simulation Internal")
-    return pave1
-
-
-def write_HL(starting):
-    pave2 = ROOT.TPaveText(starting-.005, 0.8, starting+.232, 0.85, "NDC")
-    pave2.SetFillColor(ROOT.kWhite)
-    pave2.SetFillStyle(1001)
-    pave2.SetTextFont(42)
-    pave2.SetBorderSize(0)
-    pave2.SetShadowColor(ROOT.kWhite)
-    pave2.SetTextSize(0.05)
-    pave2.AddText("HL-LHC <#mu>=200")
-    return pave2
-
-
-def write_min_bias(starting):
-    pave3 = ROOT.TPaveText(starting-.005, 0.76, starting+.185, 0.81, "NDC")
-    pave3.SetFillColor(ROOT.kWhite)
-    pave3.SetFillStyle(1001)
-    pave3.SetTextFont(42)
-    pave3.SetBorderSize(0)
-    pave3.SetShadowColor(ROOT.kWhite)
-    pave3.SetTextSize(0.05)
-    pave3.AddText("Minimum Bias")
-    return pave3
-
-
-def write_ET_cut(starting, cut):
-    pave4 = ROOT.TPaveText(starting-.005, 0.71, starting+0.115, 0.76, "NDC")
+def write_ET_cut(starting, textsize, cut):
+    pave4_locations = {"0.03": ROOT.TPaveText(starting-0.005, 0.75, starting + 0.0725, 0.79, "NDC"), "0.04": ROOT.TPaveText(starting-0.005, 0.75, starting + 0.09, 0.79, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.71, starting+0.115, 0.76, "NDC")}
+    pave4 = pave4_locations[textsize]
     pave4.SetFillColor(ROOT.kWhite)
     pave4.SetFillStyle(1001)
     pave4.SetTextFont(42)
     pave4.SetBorderSize(0)
     pave4.SetShadowColor(ROOT.kWhite)
-    pave4.SetTextSize(0.05)
+    pave4.SetTextSize(float(textsize))
     pave4.AddText("E_{T}^{TC} > "+cut)
     return pave4
+
+
+def write_all_but_ETC(starting, textsize):
+    pave_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.87, starting+0.065, 0.91, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.87, starting+0.08, 0.91, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.85, starting+0.1, 0.9, "NDC")}
+    pave = pave_locations[textsize]
+    pave.SetFillColor(ROOT.kWhite)
+    pave.SetFillStyle(1001)  # Solid fill style
+    pave.SetTextFont(72)
+    pave.SetBorderSize(0)
+    pave.SetShadowColor(ROOT.kWhite)
+    pave.SetTextSize(float(textsize))
+    pave.AddText("ATLAS")
+
+    #pave1 = ROOT.TPaveText(starting+0.075, 0.87, starting+0.23, 0.91, "NDC")
+    pave1_locations = {"0.03": ROOT.TPaveText(starting+0.065, 0.87, starting+0.225, 0.91, "NDC"), "0.04": ROOT.TPaveText(starting+0.08, 0.87, starting+0.285, 0.91, "NDC"), "0.05": ROOT.TPaveText(starting+.1005, 0.85, starting+0.355, 0.9, "NDC") }
+    pave1 = pave1_locations[textsize]
+    pave1.SetFillColor(ROOT.kWhite)
+    pave1.SetFillStyle(1001)
+    pave1.SetTextFont(42)
+    pave1.SetBorderSize(0)
+    pave1.SetShadowColor(ROOT.kWhite)
+    pave1.SetTextSize(float(textsize))
+    pave1.AddText("Simulation Internal")
+
+    pave2_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.83, starting+.145, 0.87, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.83, starting+.185, 0.87, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.8, starting+.232, 0.85, "NDC")}
+    pave2 = pave2_locations[textsize]
+    pave2.SetFillColor(ROOT.kWhite)
+    pave2.SetFillStyle(1001)
+    pave2.SetTextFont(42)
+    pave2.SetBorderSize(0)
+    pave2.SetShadowColor(ROOT.kWhite)
+    pave2.SetTextSize(float(textsize))
+    pave2.AddText("HL-LHC <#mu>=200")
+
+    pave3_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.79, starting+.115, 0.83, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.79, starting+.145, 0.83, "NDC"), "0.05" : ROOT.TPaveText(starting-.005, 0.76, starting+.185, 0.81, "NDC")}
+    pave3 = pave3_locations[textsize]
+    pave3.SetFillColor(ROOT.kWhite)
+    pave3.SetFillStyle(1001)
+    pave3.SetTextFont(42)
+    pave3.SetBorderSize(0)
+    pave3.SetShadowColor(ROOT.kWhite)
+    pave3.SetTextSize(float(textsize))
+    pave3.AddText("Minimum Bias")
+
+    return pave, pave1, pave2, pave3  
