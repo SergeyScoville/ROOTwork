@@ -3,7 +3,7 @@ import sys
 from array import array
 
 
-
+# This is a manual setting of the AtlasStyle that also allows titles
 def apply_atlas_style():
     AtlasStyle=ROOT.TStyle("AtlasStyle","MyCustomStyle")
     icol = ROOT.kWhite
@@ -65,6 +65,7 @@ def apply_atlas_style():
     return AtlasStyle
 
 
+# This takes in the full filepath that you pass in and returns a string with the name of the source file, the number of bins if you are rebinning, and what variable you are plotting
 def get_save_file_name(filepath, bins, plotting):
     full_filename = filepath.split("/")[-1]
     filename = full_filename.split(".")[0]
@@ -74,6 +75,7 @@ def get_save_file_name(filepath, bins, plotting):
         return(filename+"_"+str(bins)+"_Rebin_"+plotting+"_dist")
 
 
+# This takes in the number of bins and returns all of the options there are to rebin your data
 def find_divisors(number):
     divisors = []
     
@@ -85,6 +87,7 @@ def find_divisors(number):
     return divisors
 
 
+# This is a helper function to find out where the last bin is with information in it so you can constraint your x-axis
 def get_last_bin(histogram):
     x_axis = histogram.GetXaxis()
     last_nonempty_bin = None
@@ -97,6 +100,7 @@ def get_last_bin(histogram):
         return(x_axis.GetBinCenter(last_nonempty_bin))
     
 
+# This is a function specifically for N distributions to set the x and y axis maxima and minima
 def N_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     for i in individual_histograms:
         if "--sk" in sys.argv:
@@ -110,6 +114,7 @@ def N_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     return
 
 
+# This is a utility to set the x and y axis of Et distributions
 def ET_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     for i in individual_histograms:
         i.GetXaxis().SetRangeUser(0, xmax)
@@ -123,6 +128,7 @@ def ET_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     return
 
 
+# This is an overall modifier, currently really only used for Eta distributions but was built a while ago so I am not certain about dependencies in it
 def histogram_modifiers(individual_histograms, xmax, ymax, bins, etcut):
     for i in individual_histograms:
         if "eta" in sys.argv:
@@ -149,6 +155,7 @@ def histogram_modifiers(individual_histograms, xmax, ymax, bins, etcut):
     return
 
 
+# This is a function to find the maximum y-value the histogram takes so that we do not display a bunch of overhead
 def get_histograms_ymax(individual_histograms, bins):
     histograms = individual_histograms
     if bins != 0 and "eta" not in sys.argv:
@@ -161,6 +168,7 @@ def get_histograms_ymax(individual_histograms, bins):
     return y_max
 
 
+# This is a function that is used while making the markers for the Eta distributions so that the second distributions are just shown as lines instead of a full distribution
 def get_eta_maximum(histograms):
     max_bin_height = 0
     for i in histograms:
@@ -171,6 +179,8 @@ def get_eta_maximum(histograms):
     return max_bin_height
 
 
+# This is an outdated function that turns an Eta distribution into 16 bins from its original, it is BROKEN!!!
+# FIXME
 def change_to_sixteen_bins(histograms, bin_edges):
     new_histograms = []
     num_bins_new = 14
@@ -186,6 +196,8 @@ def change_to_sixteen_bins(histograms, bin_edges):
     return new_histograms
 
 
+# This function sets the y axis to event fractions rather that histogram total fraction, used for Eta distributions
+# TODO modify this so that it is used everywhere rather than just for eta?
 def set_y_axis_to_event_fraction(file, histograms):
     hists = histograms
     histogram_entries = []
@@ -201,6 +213,7 @@ def set_y_axis_to_event_fraction(file, histograms):
     return hists[0], hists[1], hists[2], histogram_entries
 
 
+# Self-explainatory, this gets the total number of entries in the histogram
 def get_histogram_num_entries(file, histograms):
     if "--sk" in sys.argv:
         hist_names = ["h_Calo422SKclusters_N", "h_Calo420SKclusters_N", "h_CaloCalSKclusters_N"] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
@@ -213,15 +226,18 @@ def get_histogram_num_entries(file, histograms):
     return histogram_entries
 
 
+# This is the main running file that uses get_last_bin(histogram) to find the xmax of histograms
 def get_histograms_xmax(individuals_histograms):
     x_max = 0
     for histogram in individuals_histograms:
-        print(get_last_bin(histogram), "max check")
+        print(get_last_bin(histogram), "max check") # This check is just to manually set the range especially if you are seeing problems with not setting all to the same range
         if get_last_bin(histogram) > x_max:
             x_max = get_last_bin(histogram)
     return x_max
 
 
+# This does all of the others that are not Eta dist to normalize it
+# TODO check to see if this is actually done correctly?
 def set_y_axis_to_bin_ratio(all_histograms):
     for histogram in all_histograms:
         total_events = histogram.GetEntries()
@@ -235,6 +251,7 @@ def set_y_axis_to_bin_ratio(all_histograms):
     return 
 
 
+# This sets the last bin to be the overflow bin
 def overflow_bin_set(all_histograms):
     for histogram in all_histograms:
         last_bin1 = histogram.GetNbinsX()
@@ -245,6 +262,7 @@ def overflow_bin_set(all_histograms):
     return
 
 
+# This specifically wirtes the ET_cut part of the TPave object, can set the size, cut and starting point and has dictionary for three text sizees
 def write_ET_cut(starting, textsize, cut):
     pave4_locations = {"0.03": ROOT.TPaveText(starting-0.005, 0.75, starting + 0.0725, 0.79, "NDC"), "0.04": ROOT.TPaveText(starting-0.005, 0.75, starting + 0.09, 0.79, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.71, starting+0.115, 0.76, "NDC")}
     pave4 = pave4_locations[textsize]
@@ -258,6 +276,7 @@ def write_ET_cut(starting, textsize, cut):
     return pave4
 
 
+# This writes the rest of the Atlas stuf that isnt the Et cut
 def write_all_but_ETC(starting, textsize):
     pave_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.87, starting+0.065, 0.91, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.87, starting+0.08, 0.91, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.85, starting+0.1, 0.9, "NDC")}
     pave = pave_locations[textsize]
