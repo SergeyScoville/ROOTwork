@@ -99,6 +99,8 @@ def get_last_bin(histogram):
 
 def N_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     for i in individual_histograms:
+        if "--sk" in sys.argv:
+            xmax = 400
         i.GetXaxis().SetRangeUser(0, 1.1*xmax)
         if logarithm:
             i.GetYaxis().SetRangeUser(1*10**(-5), 5)
@@ -213,6 +215,7 @@ def get_histogram_num_entries(file, histograms):
 def get_histograms_xmax(individuals_histograms):
     x_max = 0
     for histogram in individuals_histograms:
+        print(get_last_bin(histogram), "max check")
         if get_last_bin(histogram) > x_max:
             x_max = get_last_bin(histogram)
     return x_max

@@ -68,6 +68,7 @@ for i in [hist1, hist2, hist3]:
 set_y_axis_to_bin_ratio([hist1, hist2, hist3])
 
 x_max = get_histograms_xmax([hist1, hist2, hist3])
+#x_max = get_histograms_xmax([hist1, hist2])
 y_max = get_histograms_ymax([hist1, hist2, hist3], bins)
 
 hist_titles = ["Number of Topoclusters", "Number of Topoclusters post SK", "Cumulative Number of Topoclusters", "Cumulative Number of Topoclusters post SK"]

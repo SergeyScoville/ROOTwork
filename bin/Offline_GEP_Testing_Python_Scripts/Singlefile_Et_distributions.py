@@ -165,9 +165,9 @@ canvas.Update()
 filepaths = "/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/Doc/"
 extensions = ""
 if softie:
-    extensions += get_save_file_name(sys.argv[1], bins, "eta")+"_SK"
+    extensions += get_save_file_name(sys.argv[1], bins, "Et")+"_SK"
 else:
-    extensions += get_save_file_name(sys.argv[1], bins, "eta")
+    extensions += get_save_file_name(sys.argv[1], bins, "Et")
 if logging:
     extensions += "_LOG"
 if compare:
