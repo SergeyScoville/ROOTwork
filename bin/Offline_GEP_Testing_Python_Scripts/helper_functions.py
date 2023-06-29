@@ -100,6 +100,7 @@ def get_last_bin(histogram):
 def N_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     for i in individual_histograms:
         if "--sk" in sys.argv:
+            # Change this line for the maximum that you need of your datatset, check to make sure that it is displaying constant accross multiple cuts
             xmax = 400
         i.GetXaxis().SetRangeUser(0, 1.1*xmax)
         if logarithm:
