@@ -85,7 +85,8 @@ hist1.GetXaxis().SetTitle("#eta")
 hist1.GetYaxis().SetTitle("Number of topoclusters/# events")
 bin_width = 0.6125
 num_ticks = int(hist1.GetXaxis().GetXmax() / bin_width)
-#hist1.GetXaxis().SetNdivisions(16, False)
+hist1.GetXaxis().SetNdivisions(16, False)
+hist1.GetXaxis().SetLabelSize(0.023)
 hist1.GetXaxis().SetTickLength(0.02)
 overflow_bin_set([hist1, hist2, hist3])
 
@@ -106,7 +107,7 @@ for i in range(len(bin_edges)-1):
     TEST_line.SetLineStyle(3)
     TEST_line.DrawLine(bin_edges[i], 0, bin_edges[i], real_maximum*1.1)
     canvas.Update()
-
+"""
 starting = float(sys.argv[9])
 
 atlas, sim_internal, hl, min_bia = write_all_but_ETC(starting, sys.argv[6])
@@ -119,7 +120,7 @@ canvas.Update()
 if "NoCut" not in get_save_file_name(sys.argv[1], bins, "N"):
     etcut = write_ET_cut(starting, sys.argv[6], cut)
     etcut.Draw()
-    canvas.Update()
+    canvas.Update()"""
 
 for i in range(0, hist2.GetNbinsX()):
     bin_height = hist2.GetBinContent(i+1)
@@ -189,6 +190,9 @@ else:
     extensions += get_save_file_name(sys.argv[1], bins, "eta")
 if testing:
     extensions += "_TESTING"
+
+extensions += "NoAtlas"
+
 if "--test" in sys.argv:
     if "--sk" in sys.argv:
         canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_w_SK/"+extensions+".pdf")
