@@ -99,7 +99,7 @@ if cum:
 hist1.Draw("hist")
 canvas.Update()
 
-"""
+
 starting = float(sys.argv[9])
 
 atlas, sim_internal, hl, min_bia = write_all_but_ETC(starting, sys.argv[6])
@@ -113,7 +113,7 @@ canvas.Update()
 if "NoCut" not in get_save_file_name(sys.argv[1], bins, "N"):
     etcut = write_ET_cut(starting, sys.argv[6], cut)
     etcut.Draw()
-    canvas.Update()"""
+    canvas.Update()
 
 hist2.Sumw2(0)
 hist2.SetLineColor(ROOT.kRed)
@@ -178,8 +178,6 @@ if cum:
     extensions += "_CD"
 if testing:
     extensions += "_TESTING"
-
-extensions += "NoAtlas"
 
 if testing:
     if "--sk" in sys.argv:

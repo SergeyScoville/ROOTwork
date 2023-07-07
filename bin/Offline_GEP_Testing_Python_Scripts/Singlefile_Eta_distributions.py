@@ -93,8 +93,6 @@ overflow_bin_set([hist1, hist2, hist3])
 bin_edges = [-4.9, -4.2875, -3.675, -3.0625, -2.45, -1.8375, -1.225, -0.6125, 0, 0.6125, 1.225, 1.8375, 2.45, 3.0625, 3.675, 4.2875, 4.9 ]
 
 
-
-
 hist1.SetFillColorAlpha(ROOT.kBlue, 0.1)
 hist1.SetFillStyle(3144)
 hist1.SetLineWidth(2)
@@ -107,7 +105,7 @@ for i in range(len(bin_edges)-1):
     TEST_line.SetLineStyle(3)
     TEST_line.DrawLine(bin_edges[i], 0, bin_edges[i], real_maximum*1.1)
     canvas.Update()
-"""
+
 starting = float(sys.argv[9])
 
 atlas, sim_internal, hl, min_bia = write_all_but_ETC(starting, sys.argv[6])
@@ -120,7 +118,7 @@ canvas.Update()
 if "NoCut" not in get_save_file_name(sys.argv[1], bins, "N"):
     etcut = write_ET_cut(starting, sys.argv[6], cut)
     etcut.Draw()
-    canvas.Update()"""
+    canvas.Update()
 
 for i in range(0, hist2.GetNbinsX()):
     bin_height = hist2.GetBinContent(i+1)
@@ -171,13 +169,12 @@ else:
 
 legend.AddEntry(hist1,hist_legend_names[0].replace("_", " ")) 
 legend.AddEntry(line,hist_legend_names[1].replace("_", " "), "l") 
-#legend.SetFillColor(ROOT.kRed)
 if third_histogram:
     legend.AddEntry(line3, hist_legend_names[2].replace("_", " "), "l") 
 hist1.GetXaxis().SetTitleSize(0.04)
 hist1.GetYaxis().SetTitleSize(0.04)
 legend.SetTextSize(float(sys.argv[8]))
-#legend.SetLineWidth(0)                      # Remove the boundary on the legend
+legend.SetLineWidth(0)                      # Remove the boundary on the legend
 legend.Draw("same")  
 
 canvas.Update()
