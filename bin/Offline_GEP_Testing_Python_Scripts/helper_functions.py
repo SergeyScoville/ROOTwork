@@ -106,7 +106,7 @@ def N_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     for i in individual_histograms:
         #if "--sk" in sys.argv:
             # Change this line for the maximum that you need of your datatset, check to make sure that it is displaying constant accross multiple cuts
-            #xmax = 400
+        xmax = 500
         i.GetXaxis().SetRangeUser(0, 1.2*xmax)
         if logarithm:
             i.GetYaxis().SetRangeUser(1*10**(-5), 5)
@@ -268,7 +268,7 @@ def overflow_bin_set(all_histograms):
 # This specifically wirtes the ET_cut part of the TPave object, can set the size, cut and starting point and has dictionary for three text sizees
 def write_ET_cut(starting, textsize, cut):
     y = 0
-    pave4_locations = {"0.03": ROOT.TPaveText(starting-0.005, 0.75-y, starting + 0.0725, 0.79-y, "NDC"), "0.04": ROOT.TPaveText(starting-0.005, 0.75-y, starting + 0.09, 0.79-y, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.71-y, starting+0.115, 0.76-y, "NDC")}
+    pave4_locations = {"0.03": ROOT.TPaveText(starting-0.003, 0.75-y, starting + 0.0725, 0.79-y, "NDC"), "0.04": ROOT.TPaveText(starting-0.003, 0.75-y, starting + 0.09, 0.79-y, "NDC"), "0.05": ROOT.TPaveText(starting-.003, 0.71-y, starting+0.115, 0.76-y, "NDC")}
     pave4 = pave4_locations[textsize]
     pave4.SetFillColor(ROOT.kWhite)
     pave4.SetFillStyle(1001)
@@ -304,7 +304,7 @@ def write_all_but_ETC(starting, textsize):
     pave1.SetTextSize(float(textsize))
     pave1.AddText("Simulation Internal")
 
-    pave2_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.83-y, starting+.145, 0.87-y, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.83-y, starting+.185, 0.87-y, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.8-y, starting+.232, 0.85-y, "NDC")}
+    pave2_locations = {"0.03": ROOT.TPaveText(starting-.0045, 0.83-y, starting+.145, 0.87-y, "NDC"), "0.04": ROOT.TPaveText(starting-.0045, 0.83-y, starting+.185, 0.87-y, "NDC"), "0.05": ROOT.TPaveText(starting-.0045, 0.8-y, starting+.232, 0.85-y, "NDC")}
     pave2 = pave2_locations[textsize]
     pave2.SetFillColor(ROOT.kWhite)
     pave2.SetFillStyle(1001)
