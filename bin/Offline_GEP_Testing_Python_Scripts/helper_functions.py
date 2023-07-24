@@ -2,6 +2,7 @@ import ROOT
 import sys
 from array import array
 
+esection = sys.argv[10]
 
 # This is a manual setting of the AtlasStyle that also allows titles
 def apply_atlas_style():
@@ -103,10 +104,10 @@ def get_last_bin(histogram):
 # This is a function specifically for N distributions to set the x and y axis maxima and minima
 def N_dist_axis_set(individual_histograms, xmax, ymax, logarithm=False):
     for i in individual_histograms:
-        if "--sk" in sys.argv:
+        #if "--sk" in sys.argv:
             # Change this line for the maximum that you need of your datatset, check to make sure that it is displaying constant accross multiple cuts
-            xmax = 400
-        i.GetXaxis().SetRangeUser(0, 1.1*xmax)
+            #xmax = 400
+        i.GetXaxis().SetRangeUser(0, 1.2*xmax)
         if logarithm:
             i.GetYaxis().SetRangeUser(1*10**(-5), 5)
         else:
@@ -202,12 +203,13 @@ def set_y_axis_to_event_fraction(file, histograms):
     hists = histograms
     histogram_entries = []
     if "--sk" in sys.argv:
-        hist_names = ["h_Calo422SKclusters_N", "h_Calo422SKTopoClusters_N", "h_CaloCalSKclusters_N"] # Change for Rajat temp graphs
+        hist_names = ["h_Calo422SKclusters"+esection, "h_Calo422SKTopoClusters"+esection, "h_CaloCalSKclusters"+esection] # Change for Rajat temp graphs
+        #hist_names = ["h_Calo422SKclusters_N1", "h_Calo422SKTopoClusters_N1", "h_CaloCalSKclusters_N1"] # Change for Rajat temp graphs
     else:
-        hist_names = ["h_Calo422TopoClusters_N", "h_Calo420TopoClusters_N", "h_CaloCalTopoClusters_N"] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+        hist_names = ["h_Calo422TopoClusters"+esection, "h_Calo420TopoClusters"+esection, "h_CaloCalTopoClusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+        #hist_names = ["h_Calo422TopoClusters_N1", "h_Calo420TopoClusters_N1", "h_CaloCalTopoClusters_N1"] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
     for i in range(len(hists)):
         hist1_n = file.Get(hist_names[i])
-        print(hist1_n.GetEntries(), hist_names[i])
         hists[i].Scale(1/hist1_n.GetEntries())
         histogram_entries.append(hist1_n.GetEntries())
     return hists[0], hists[1], hists[2], histogram_entries
@@ -216,9 +218,11 @@ def set_y_axis_to_event_fraction(file, histograms):
 # Self-explainatory, this gets the total number of entries in the histogram
 def get_histogram_num_entries(file, histograms):
     if "--sk" in sys.argv:
-        hist_names = ["h_Calo422SKclusters_N", "h_Calo420SKclusters_N", "h_CaloCalSKclusters_N"] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+        hist_names = ["h_Calo422SKclusters"+esection, "h_Calo420SKclusters"+esection, "h_CaloCalSKclusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+        #hist_names = ["h_Calo422SKclusters_N1", "h_Calo422SKTopoClusters_N1", "h_CaloCalSKclusters_N1"]
     else:
-        hist_names = ["h_Calo422TopoClusters_N", "h_Calo420TopoClusters_N", "h_CaloCalTopoClusters_N"] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+        hist_names = ["h_Calo422TopoClusters"+esection, "h_Calo420TopoClusters"+esection, "h_CaloCalTopoClusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+        #hist_names = ["h_Calo422TopoClusters_N1", "h_Calo420TopoClusters_N1", "h_CaloCalTopoClusters_N1"]
     histogram_entries = []
     for i in range(len(histograms)):
         hist1_n = file.Get(hist_names[i])
@@ -230,7 +234,6 @@ def get_histogram_num_entries(file, histograms):
 def get_histograms_xmax(individuals_histograms):
     x_max = 0
     for histogram in individuals_histograms:
-        print(get_last_bin(histogram), "max check") # This check is just to manually set the range especially if you are seeing problems with not setting all to the same range
         if get_last_bin(histogram) > x_max:
             x_max = get_last_bin(histogram)
     return x_max
@@ -264,7 +267,8 @@ def overflow_bin_set(all_histograms):
 
 # This specifically wirtes the ET_cut part of the TPave object, can set the size, cut and starting point and has dictionary for three text sizees
 def write_ET_cut(starting, textsize, cut):
-    pave4_locations = {"0.03": ROOT.TPaveText(starting-0.005, 0.75, starting + 0.0725, 0.79, "NDC"), "0.04": ROOT.TPaveText(starting-0.005, 0.75, starting + 0.09, 0.79, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.71, starting+0.115, 0.76, "NDC")}
+    y = 0
+    pave4_locations = {"0.03": ROOT.TPaveText(starting-0.005, 0.75-y, starting + 0.0725, 0.79-y, "NDC"), "0.04": ROOT.TPaveText(starting-0.005, 0.75-y, starting + 0.09, 0.79-y, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.71-y, starting+0.115, 0.76-y, "NDC")}
     pave4 = pave4_locations[textsize]
     pave4.SetFillColor(ROOT.kWhite)
     pave4.SetFillStyle(1001)
@@ -278,7 +282,8 @@ def write_ET_cut(starting, textsize, cut):
 
 # This writes the rest of the Atlas stuf that isnt the Et cut
 def write_all_but_ETC(starting, textsize):
-    pave_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.87, starting+0.065, 0.91, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.87, starting+0.08, 0.91, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.85, starting+0.1, 0.9, "NDC")}
+    y = 0
+    pave_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.87-y, starting+0.065, 0.91-y, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.87-y, starting+0.08, 0.91-y, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.85-y, starting+0.1, 0.9-y, "NDC")}
     pave = pave_locations[textsize]
     pave.SetFillColor(ROOT.kWhite)
     pave.SetFillStyle(1001)  # Solid fill style
@@ -289,7 +294,7 @@ def write_all_but_ETC(starting, textsize):
     pave.AddText("ATLAS")
 
     #pave1 = ROOT.TPaveText(starting+0.075, 0.87, starting+0.23, 0.91, "NDC")
-    pave1_locations = {"0.03": ROOT.TPaveText(starting+0.065, 0.87, starting+0.225, 0.91, "NDC"), "0.04": ROOT.TPaveText(starting+0.08, 0.87, starting+0.285, 0.91, "NDC"), "0.05": ROOT.TPaveText(starting+.1005, 0.85, starting+0.355, 0.9, "NDC") }
+    pave1_locations = {"0.03": ROOT.TPaveText(starting+0.065, 0.87-y, starting+0.225, 0.91-y, "NDC"), "0.04": ROOT.TPaveText(starting+0.08, 0.87-y, starting+0.285, 0.91-y, "NDC"), "0.05": ROOT.TPaveText(starting+.1005, 0.85-y, starting+0.355, 0.9-y, "NDC") }
     pave1 = pave1_locations[textsize]
     pave1.SetFillColor(ROOT.kWhite)
     pave1.SetFillStyle(1001)
@@ -299,7 +304,7 @@ def write_all_but_ETC(starting, textsize):
     pave1.SetTextSize(float(textsize))
     pave1.AddText("Simulation Internal")
 
-    pave2_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.83, starting+.145, 0.87, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.83, starting+.185, 0.87, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.8, starting+.232, 0.85, "NDC")}
+    pave2_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.83-y, starting+.145, 0.87-y, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.83-y, starting+.185, 0.87-y, "NDC"), "0.05": ROOT.TPaveText(starting-.005, 0.8-y, starting+.232, 0.85-y, "NDC")}
     pave2 = pave2_locations[textsize]
     pave2.SetFillColor(ROOT.kWhite)
     pave2.SetFillStyle(1001)
@@ -309,7 +314,7 @@ def write_all_but_ETC(starting, textsize):
     pave2.SetTextSize(float(textsize))
     pave2.AddText("HL-LHC <#mu>=200")
 
-    pave3_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.79, starting+.115, 0.83, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.79, starting+.145, 0.83, "NDC"), "0.05" : ROOT.TPaveText(starting-.005, 0.76, starting+.185, 0.81, "NDC")}
+    pave3_locations = {"0.03": ROOT.TPaveText(starting-.005, 0.79-y, starting+.115, 0.83-y, "NDC"), "0.04": ROOT.TPaveText(starting-.005, 0.79-y, starting+.145, 0.83-y, "NDC"), "0.05" : ROOT.TPaveText(starting-.005, 0.76-y, starting+.185, 0.81-y, "NDC")}
     pave3 = pave3_locations[textsize]
     pave3.SetFillColor(ROOT.kWhite)
     pave3.SetFillStyle(1001)

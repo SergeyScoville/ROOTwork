@@ -14,7 +14,7 @@ stylistic = apply_atlas_style()
 ROOT.gROOT.SetStyle("AtlasStyle")
 
 bins = int(sys.argv[2])
-
+esection = sys.argv[10]
 cum = False
 logarithm = False
 softie = False
@@ -23,7 +23,7 @@ if "--sk" in sys.argv:
     softie = True
 if "--cd" in sys.argv:
     cum = True
-if "--log" in sys.argv:
+if "--logs" in sys.argv:
     logarithm = True
 if "--test" in sys.argv:
     testing = True
@@ -31,17 +31,23 @@ if "--test" in sys.argv:
 file = ROOT.TFile(sys.argv[1])
 plotting = sys.argv[2]
 if "--sk" in sys.argv:
-    hist1 = file.Get("h_Calo422SKclusters_N")
-    hist2 = file.Get("h_Calo420SKclusters_N")
-    hist3 = file.Get("h_CaloCalSKclusters_N")
+    hist1 = file.Get("h_Calo422SKclusters"+esection)
+    hist2 = file.Get("h_Calo420SKclusters"+esection)
+    hist3 = file.Get("h_CaloCalSKclusters"+esection)
+    #hist1 = file.Get("h_Calo422SKclusters_N1")
+    #hist2 = file.Get("h_Calo420SKclusters_N1")
+    #hist3 = file.Get("h_CaloCalSKclusters_N1")
 elif "--onvoff" in sys.argv:
     hist1 = file.Get("h_Calo"+sys.argv[-1]+"SKclusters_N")
     hist2 = file.Get("h_Calo"+sys.argv[-1]+"SKTopoClusters_N")
     hist3 = file.Get("h_CaloCalSKclusters_N")
 else:
-    hist1 = file.Get("h_Calo422TopoClusters_N") # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
-    hist2 = file.Get("h_Calo420TopoClusters_N") # Change for pre versus post sk: Calo420TopoClusters_N -> Calo420SKclusters_N
-    hist3 = file.Get("h_CaloCalTopoClusters_N") # Change for pre versus post sk: CaloCalTopoClusters_N -> CaloCalSKclusters_N
+    hist1 = file.Get("h_Calo422TopoClusters"+esection) # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+    hist2 = file.Get("h_Calo420TopoClusters"+esection) # Change for pre versus post sk: Calo420TopoClusters_N -> Calo420SKclusters_N
+    hist3 = file.Get("h_CaloCalTopoClusters"+esection) # Change for pre versus post sk: CaloCalTopoClusters_N -> CaloCalSKclusters_N
+    #hist1 = file.Get("h_Calo422TopoClusters_N1") # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+    #hist2 = file.Get("h_Calo420TopoClusters_N1") # Change for pre versus post sk: Calo420TopoClusters_N -> Calo420SKclusters_N
+    #hist3 = file.Get("h_CaloCalTopoClusters_N1") # Change for pre versus post sk: CaloCalTopoClusters_N -> CaloCalSKclusters_N
 if "--onvoff" in sys.argv:
     hist_legend_names = [sys.argv[-1]+"-Global SK", sys.argv[-1]+"-Offline SK", "Calo Cal"]
 else:
@@ -52,8 +58,6 @@ hist2.SetName(hist_legend_names[1])
 hist3.SetName(hist_legend_names[2])
 
 canvas = ROOT.TCanvas("canvas", "Histograms", 1200, 800)
-if "--log" in sys.argv:
-    canvas.SetLogy()
 canvas.Update()
 
 bin_options = find_divisors(hist1.GetNbinsX())
@@ -67,7 +71,7 @@ for i in [hist1, hist2, hist3]:
 
 set_y_axis_to_bin_ratio([hist1, hist2, hist3])
 
-x_max = get_histograms_xmax([hist1, hist2, hist3])
+x_max = get_histograms_xmax([hist1, hist2])
 #x_max = get_histograms_xmax([hist1, hist2])
 y_max = get_histograms_ymax([hist1, hist2, hist3], bins)
 
@@ -82,10 +86,13 @@ elif "--cd" not in sys.argv and "--sk" in sys.argv:
 else:
     hist1.SetTitle(hist_titles[0])   
 cut = sys.argv[3]
-N_dist_axis_set([hist1, hist2, hist3], x_max, y_max, logarithm=logarithm)
+N_dist_axis_set([hist1, hist2], x_max, y_max, logarithm=logarithm)
 
 
 overflow_bin_set([hist1, hist2, hist3])
+
+if "--log" in sys.argv:
+    canvas.SetLogy()
 
 hist1.GetXaxis().SetTitle("Number of Topoclusters")
 hist1.GetYaxis().SetTitle("Fraction of Events/"+str(bins)+ " TC")
@@ -181,20 +188,20 @@ if testing:
 
 if testing:
     if "--sk" in sys.argv:
-        canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_w_SK/"+extensions+".pdf")
+        canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_w_SK/"+extensions+esection+".pdf")
     else:
-        canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_No_SK/"+extensions+".pdf")
+        canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_No_SK/"+extensions+esection+".pdf")
 elif "--sk" in sys.argv:
-    canvas.SaveAs(filepaths+"Plots/Plots_w_SK/"+extensions+".png")
-    canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_w_SK/"+extensions+".pdf")
-    canvas.SaveSource(filepaths+"Source_Files/Source_Files_w_SK/"+extensions+".C")
-    output_file = ROOT.TFile(filepaths+"ROOT_files/ROOT_files_w_SK/"+extensions+".root", "RECREATE")
+    canvas.SaveAs(filepaths+"Plots/Plots_w_SK/"+extensions+esection+".png")
+    canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_w_SK/"+extensions+esection+".pdf")
+    canvas.SaveSource(filepaths+"Source_Files/Source_Files_w_SK/"+extensions+esection+".C")
+    output_file = ROOT.TFile(filepaths+"ROOT_files/ROOT_files_w_SK/"+extensions+esection+".root", "RECREATE")
     canvas.Write()
 else:
-    canvas.SaveAs(filepaths+"Plots/Plots_No_SK/"+extensions+".png")
-    canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_No_SK/"+extensions+".pdf")
-    canvas.SaveSource(filepaths+"Source_Files/Source_Files_No_SK/"+extensions+".C")
-    output_file = ROOT.TFile(filepaths+"ROOT_files/ROOT_files_No_SK/"+extensions+".root", "RECREATE")
+    canvas.SaveAs(filepaths+"Plots/Plots_No_SK/"+extensions+esection+".png")
+    canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_No_SK/"+extensions+esection+".pdf")
+    canvas.SaveSource(filepaths+"Source_Files/Source_Files_No_SK/"+extensions+esection+".C")
+    output_file = ROOT.TFile(filepaths+"ROOT_files/ROOT_files_No_SK/"+extensions+esection+".root", "RECREATE")
     canvas.Write()
 
 if not testing:
