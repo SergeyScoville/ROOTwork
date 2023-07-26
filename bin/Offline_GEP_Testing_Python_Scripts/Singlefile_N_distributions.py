@@ -96,7 +96,10 @@ if "--log" in sys.argv:
     canvas.SetLogy()
 
 hist1.GetXaxis().SetTitle("Number of Topoclusters")
-hist1.GetYaxis().SetTitle("Fraction of Events/"+str(bins)+ " TC")
+if bins != 0:
+    hist1.GetYaxis().SetTitle("Fraction of Events/"+str(bins)+ " TC")
+else:
+    hist1.GetYaxis().SetTitle("Fraction of Events/")
 
 hist1.SetFillColorAlpha(ROOT.kBlue, 0.1)
 hist1.SetFillStyle(3144)
