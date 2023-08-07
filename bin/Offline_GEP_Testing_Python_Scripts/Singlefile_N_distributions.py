@@ -23,7 +23,7 @@ if "--sk" in sys.argv:
     softie = True
 if "--cd" in sys.argv:
     cum = True
-if "--logs" in sys.argv:
+if "--log" in sys.argv:
     logarithm = True
 if "--test" in sys.argv:
     testing = True
@@ -57,8 +57,7 @@ hist1.SetName(hist_legend_names[0])
 hist2.SetName(hist_legend_names[1])
 hist3.SetName(hist_legend_names[2])
 
-canvas = ROOT.TCanvas("canvas", "Histograms", 800, 600)
-canvas.SetResolution(1200)
+canvas = ROOT.TCanvas("canvas", "Histograms", 1200, 800)
 canvas.Update()
 
 bin_options = find_divisors(hist1.GetNbinsX())
@@ -99,7 +98,7 @@ hist1.GetXaxis().SetTitle("Number of Topoclusters")
 if bins != 0:
     hist1.GetYaxis().SetTitle("Fraction of Events/"+str(bins)+ " TC")
 else:
-    hist1.GetYaxis().SetTitle("Fraction of Events/")
+    hist1.GetYaxis().SetTitle("Fraction of Events/TC")
 
 hist1.SetFillColorAlpha(ROOT.kBlue, 0.1)
 hist1.SetFillStyle(3144)
@@ -137,6 +136,7 @@ hist2.SetEntries(histogram_total[1])
 hist2.Draw("hist same")
 canvas.Update()
 
+"""
 hist3.SetLineColor(ROOT.kGreen+2)
 
 hist3.Sumw2()
@@ -149,7 +149,7 @@ if "NoCut" in get_save_file_name(sys.argv[1], bins, plotting) and "--onvoff" not
     hist3.SetEntries(histogram_total[2])
     hist3.Draw("hist SAME")
     #hist3.SetFillColorAlpha(ROOT.kGreen-2, 0.1)
-    canvas.Update()
+    canvas.Update()"""
 
 canvas.SetName("All_GEP_Algo")
 canvas.Update()
@@ -189,7 +189,7 @@ if cum:
     extensions += "_CD"
 if testing:
     extensions += "_TESTING"
-
+extensions += "_NoSplitting"
 if testing:
     if "--sk" in sys.argv:
         canvas.SaveAs(filepaths+"Plots_PDFs/Plots_PDFs_w_SK/"+extensions+esection+".pdf")

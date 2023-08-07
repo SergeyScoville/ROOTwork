@@ -203,10 +203,10 @@ def set_y_axis_to_event_fraction(file, histograms):
     hists = histograms
     histogram_entries = []
     if "--sk" in sys.argv:
-        hist_names = ["h_Calo422SKclusters"+esection, "h_Calo422SKTopoClusters"+esection, "h_CaloCalSKclusters"+esection] # Change for Rajat temp graphs
-        #hist_names = ["h_Calo422SKclusters_N1", "h_Calo422SKTopoClusters_N1", "h_CaloCalSKclusters_N1"] # Change for Rajat temp graphs
+        hist_names = ["h_Calo422GlSKTopoClusters"+esection, "h_Calo420GlSKTopoClusters"+esection] # Change for Rajat temp graphs
+        #hist_names = ["h_Calo422GlSKTopoClusters_N1", "h_Calo422SKTopoClusters_N1", "h_CaloCalSKclusters_N1"] # Change for Rajat temp graphs
     else:
-        hist_names = ["h_Calo422TopoClusters"+esection, "h_Calo420TopoClusters"+esection, "h_CaloCalTopoClusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+        hist_names = ["h_Calo422TopoClusters"+esection, "h_Calo420TopoClusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
         #hist_names = ["h_Calo422TopoClusters_N1", "h_Calo420TopoClusters_N1", "h_CaloCalTopoClusters_N1"] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
     for i in range(len(hists)):
         hist1_n = file.Get(hist_names[i])
@@ -218,10 +218,10 @@ def set_y_axis_to_event_fraction(file, histograms):
 # Self-explainatory, this gets the total number of entries in the histogram
 def get_histogram_num_entries(file, histograms):
     if "--sk" in sys.argv:
-        hist_names = ["h_Calo422SKclusters"+esection, "h_Calo420SKclusters"+esection, "h_CaloCalSKclusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+        hist_names = ["h_Calo422GlSKTopoClusters"+esection, "h_Calo420GlSKTopoClusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
         #hist_names = ["h_Calo422SKclusters_N1", "h_Calo422SKTopoClusters_N1", "h_CaloCalSKclusters_N1"]
     else:
-        hist_names = ["h_Calo422TopoClusters"+esection, "h_Calo420TopoClusters"+esection, "h_CaloCalTopoClusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
+        hist_names = ["h_Calo422TopoClusters"+esection, "h_Calo420TopoClusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
         #hist_names = ["h_Calo422TopoClusters_N1", "h_Calo420TopoClusters_N1", "h_CaloCalTopoClusters_N1"]
     histogram_entries = []
     for i in range(len(histograms)):
@@ -264,6 +264,131 @@ def overflow_bin_set(all_histograms):
             histogram.SetBinContent(last_bin1+1, 0)
     return
 
+
+# This specifically wirtes the ET_cut part of the TPave object, can set the size, cut and starting point and has dictionary for three text sizees
+"""
+This is for 800x600
+def write_ET_cut(starting, textsize, cut):
+    y = 0
+    pave4_locations = {"0.03": ROOT.TPaveText(starting, 0.75-y, starting + 0.08, 0.79-y, "NDC"), "0.04": ROOT.TPaveText(starting, 0.75-y, starting + 0.105, 0.79-y, "NDC"), "0.05": ROOT.TPaveText(starting, 0.71-y, starting+0.13, 0.76-y, "NDC")}
+    pave4 = pave4_locations[textsize]
+    pave4.SetFillColor(ROOT.kRed)
+    pave4.SetFillStyle(1001)
+    pave4.SetTextFont(42)
+    pave4.SetBorderSize(0)
+    pave4.SetShadowColor(ROOT.kWhite)
+    pave4.SetTextSize(float(textsize))
+    pave4.AddText("E_{T}^{TC} > "+cut)
+    return pave4
+
+
+# This writes the rest of the Atlas stuf that isnt the Et cut
+def write_all_but_ETC(starting, textsize):
+    y = 0
+    pave_locations = {"0.03": ROOT.TPaveText(starting, 0.87-y, starting+0.066, 0.91-y, "NDC"), "0.04": ROOT.TPaveText(starting, 0.87-y, starting+0.085, 0.91-y, "NDC"), "0.05": ROOT.TPaveText(starting, 0.85-y, starting+0.106, 0.9-y, "NDC")}
+    pave = pave_locations[textsize]
+    pave.SetFillColor(ROOT.kRed)
+    pave.SetFillStyle(1001)  # Solid fill style
+    pave.SetTextFont(72)
+    pave.SetBorderSize(0)
+    pave.SetShadowColor(ROOT.kWhite)
+    pave.SetTextSize(float(textsize))
+    pave.AddText("ATLAS")
+
+    #pave1 = ROOT.TPaveText(starting+0.075, 0.87, starting+0.23, 0.91, "NDC")
+    pave1_locations = {"0.03": ROOT.TPaveText(starting+0.07, 0.87-y, starting+0.238, 0.91-y, "NDC"), "0.04": ROOT.TPaveText(starting+0.09, 0.87-y, starting+0.31, 0.91-y, "NDC"), "0.05": ROOT.TPaveText(starting+.115, 0.85-y, starting+0.38, 0.9-y, "NDC") }
+    pave1 = pave1_locations[textsize]
+    pave1.SetFillColor(ROOT.kRed)
+    pave1.SetFillStyle(1001)
+    pave1.SetTextFont(42)
+    pave1.SetBorderSize(0)
+    pave1.SetShadowColor(ROOT.kWhite)
+    pave1.SetTextSize(float(textsize))
+    pave1.AddText("Simulation Internal")
+
+    pave2_locations = {"0.03": ROOT.TPaveText(starting, 0.83-y, starting+.157, 0.87-y, "NDC"), "0.04": ROOT.TPaveText(starting, 0.83-y, starting+.205, 0.87-y, "NDC"), "0.05": ROOT.TPaveText(starting, 0.8-y, starting+.255, 0.85-y, "NDC")}
+    pave2 = pave2_locations[textsize]
+    pave2.SetFillColor(ROOT.kRed)
+    pave2.SetFillStyle(1001)
+    pave2.SetTextFont(42)
+    pave2.SetBorderSize(0)
+    pave2.SetShadowColor(ROOT.kWhite)
+    pave2.SetTextSize(float(textsize))
+    pave2.AddText("HL-LHC <#mu>=200")
+
+    pave3_locations = {"0.03": ROOT.TPaveText(starting, 0.79-y, starting+.125, 0.831-y, "NDC"), "0.04": ROOT.TPaveText(starting, 0.79-y, starting+.165, 0.83-y, "NDC"), "0.05" : ROOT.TPaveText(starting, 0.76-y, starting+.205, 0.81-y, "NDC")}
+    pave3 = pave3_locations[textsize]
+    pave3.SetFillColor(ROOT.kRed)
+    pave3.SetFillStyle(1001)
+    pave3.SetTextFont(42)
+    pave3.SetBorderSize(0)
+    pave3.SetShadowColor(ROOT.kWhite)
+    pave3.SetTextSize(float(textsize))
+    pave3.AddText("Minimum Bias")
+
+    return pave, pave1, pave2, pave3"""
+"""
+This is for 3560X2160 4K
+# This specifically wirtes the ET_cut part of the TPave object, can set the size, cut and starting point and has dictionary for three text sizees
+def write_ET_cut(starting, textsize, cut):
+    y = 0
+    pave4_locations = {"0.03": ROOT.TPaveText(starting, 0.75-y, starting + 0.066, 0.79-y, "NDC"), "0.04": ROOT.TPaveText(starting, 0.75-y, starting + 0.085, 0.79-y, "NDC"), "0.05": ROOT.TPaveText(starting, 0.71-y, starting+0.105, 0.76-y, "NDC")}
+    pave4 = pave4_locations[textsize]
+    pave4.SetFillColor(ROOT.kWhite)
+    pave4.SetFillStyle(1001)
+    pave4.SetTextFont(42)
+    pave4.SetBorderSize(0)
+    pave4.SetShadowColor(ROOT.kWhite)
+    pave4.SetTextSize(float(textsize))
+    pave4.AddText("E_{T}^{TC} > "+cut)
+    return pave4
+
+
+# This writes the rest of the Atlas stuf that isnt the Et cut
+def write_all_but_ETC(starting, textsize):
+    y = 0
+    pave_locations = {"0.03": ROOT.TPaveText(starting, 0.87-y, starting+0.055, 0.91-y, "NDC"), "0.04": ROOT.TPaveText(starting, 0.87-y, starting+0.07, 0.91-y, "NDC"), "0.05": ROOT.TPaveText(starting, 0.85-y, starting+0.09, 0.9-y, "NDC")}
+    pave = pave_locations[textsize]
+    pave.SetFillColor(ROOT.kWhite)
+    pave.SetFillStyle(1001)  # Solid fill style
+    pave.SetTextFont(72)
+    pave.SetBorderSize(0)
+    pave.SetShadowColor(ROOT.kWhite)
+    pave.SetTextSize(float(textsize))
+    pave.AddText("ATLAS")
+
+    #pave1 = ROOT.TPaveText(starting+0.075, 0.87, starting+0.23, 0.91, "NDC")
+    pave1_locations = {"0.03": ROOT.TPaveText(starting+0.06, 0.87-y, starting+0.195, 0.91-y, "NDC"), "0.04": ROOT.TPaveText(starting+0.075, 0.87-y, starting+0.25, 0.91-y, "NDC"), "0.05": ROOT.TPaveText(starting+.1, 0.85-y, starting+0.325, 0.9-y, "NDC") }
+    pave1 = pave1_locations[textsize]
+    pave1.SetFillColor(ROOT.kWhite)
+    pave1.SetFillStyle(1001)
+    pave1.SetTextFont(42)
+    pave1.SetBorderSize(0)
+    pave1.SetShadowColor(ROOT.kWhite)
+    pave1.SetTextSize(float(textsize))
+    pave1.AddText("Simulation Internal")
+
+    pave2_locations = {"0.03": ROOT.TPaveText(starting, 0.83-y, starting+.127, 0.87-y, "NDC"), "0.04": ROOT.TPaveText(starting, 0.83-y, starting+.1635, 0.87-y, "NDC"), "0.05": ROOT.TPaveText(starting, 0.8-y, starting+.207, 0.85-y, "NDC")}
+    pave2 = pave2_locations[textsize]
+    pave2.SetFillColor(ROOT.kWhite)
+    pave2.SetFillStyle(1001)
+    pave2.SetTextFont(42)
+    pave2.SetBorderSize(0)
+    pave2.SetShadowColor(ROOT.kWhite)
+    pave2.SetTextSize(float(textsize))
+    pave2.AddText("HL-LHC <#mu>=200")
+
+    pave3_locations = {"0.03": ROOT.TPaveText(starting, 0.79-y, starting+.102, 0.83-y, "NDC"), "0.04": ROOT.TPaveText(starting, 0.79-y, starting+.131, 0.83-y, "NDC"), "0.05" : ROOT.TPaveText(starting, 0.76-y, starting+.165, 0.81-y, "NDC")}
+    pave3 = pave3_locations[textsize]
+    pave3.SetFillColor(ROOT.kWhite)
+    pave3.SetFillStyle(1001)
+    pave3.SetTextFont(42)
+    pave3.SetBorderSize(0)
+    pave3.SetShadowColor(ROOT.kWhite)
+    pave3.SetTextSize(float(textsize))
+    pave3.AddText("Minimum Bias")
+
+    return pave, pave1, pave2, pave3  """
 
 # This specifically wirtes the ET_cut part of the TPave object, can set the size, cut and starting point and has dictionary for three text sizees
 def write_ET_cut(starting, textsize, cut):
