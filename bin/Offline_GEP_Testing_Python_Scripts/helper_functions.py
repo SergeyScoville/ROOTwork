@@ -2,7 +2,6 @@ import ROOT
 import sys
 from array import array
 
-esection = sys.argv[10]
 
 # This is a manual setting of the AtlasStyle that also allows titles
 def apply_atlas_style():
@@ -199,7 +198,7 @@ def change_to_sixteen_bins(histograms, bin_edges):
 
 # This function sets the y axis to event fractions rather that histogram total fraction, used for Eta distributions
 # TODO modify this so that it is used everywhere rather than just for eta?
-def set_y_axis_to_event_fraction(file, histograms):
+def set_y_axis_to_event_fraction(file, histograms, esection):
     hists = histograms
     histogram_entries = []
     if "--sk" in sys.argv:
@@ -216,7 +215,7 @@ def set_y_axis_to_event_fraction(file, histograms):
 
 
 # Self-explainatory, this gets the total number of entries in the histogram
-def get_histogram_num_entries(file, histograms):
+def get_histogram_num_entries(file, histograms, esection):
     if "--sk" in sys.argv:
         hist_names = ["h_Calo422GlSKTopoClusters"+esection, "h_Calo420GlSKTopoClusters"+esection] # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
         #hist_names = ["h_Calo422SKclusters_N1", "h_Calo422SKTopoClusters_N1", "h_CaloCalSKclusters_N1"]
