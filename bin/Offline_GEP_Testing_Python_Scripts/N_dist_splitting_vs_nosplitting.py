@@ -20,7 +20,8 @@ legend_adjustment_y = float(sys.argv[5])    # Sets the additional y position whe
 TPave_textsize      = float(sys.argv[6])    # Sets the size of the ATLAS Simulation and related text, three options built in: 0.03, 0.04, 0.05
 legend_fontsize     = sys.argv[7]           # Sets the size of the legend text, two options built in: 0.03, 0.04
 TPave_start         = float(sys.argv[8])    # Sets the starting position of the ATLAS Simulation and related test, range from 0 to 1
-algorithm           = sys.argv[9]
+algorithm           = sys.argv[9]           # Sets the algorithm that you will be plotting. Options: 422, 420
+esection            = sys.argv[10]          # Can be used to set a specific eta region that you are plotting. Options: [N1, N2, N3, N4, N5, N, --all]
 
 # These two flags are for the front-summed cumulative distribution, generally do --log and --cd at the same time
 logarithm = False
@@ -31,7 +32,7 @@ if "--cd" in sys.argv:
     cum = True
 
 # These are the eta regions that are outlined in some of the files
-regions = ["_N1", "_N2", "_N3", "_N4", "_N5", "_N"]
+regions = ["N1", "N2", "N3", "N4", "N5", "N"]
 
 # This just creates the name of the file that is named in this convention: Et cut, rebin, feature we are graphing, algorithm we are comparing, if we applied SK or not, what the plot is comparing. Saves both png and pdf, but pdf is much higher quality
 def save_files(canvas, esection):
@@ -45,8 +46,8 @@ def save_files(canvas, esection):
     if cum:
         extensions += "_CD"
     extensions += "_NoSplittingVsSplitting"
-    canvas.SaveAs(filepaths+"Plots/"+extensions+esection+".png")
-    canvas.SaveAs(filepaths+"Plots_PDFs/"+extensions+esection+".pdf")
+    canvas.SaveAs(filepaths+"Plots/"+extensions+"_"+esection+".png")
+    canvas.SaveAs(filepaths+"Plots_PDFs/"+extensions+"_"+esection+".pdf")
     return
 
 
@@ -128,7 +129,12 @@ file2 = ROOT.TFile("/Users/sergeyscoville/Desktop/Projects/ROOT_Github/ROOTwork/
 canvas = ROOT.TCanvas("canvas", "Histograms", 1200, 800)
 canvas.Update()
 
-for i in regions:
-    histogram1 = file1.Get("h_Calo422GlSKTopoClusters"+i)
-    histogram2 = file2.Get("h_Calo422SKclusters"+i)
-    plot_algorithm([histogram1, histogram2], canvas, i)
+if esection == "--all":
+    for i in regions:
+        histogram1 = file1.Get("h_Calo422GlSKTopoClusters_"+i)
+        histogram2 = file2.Get("h_Calo422SKclusters_"+i)
+        plot_algorithm([histogram1, histogram2], canvas, i)
+else:
+    histogram1 = file1.Get("h_Calo422GlSKTopoClusters_"+esection)
+    histogram2 = file2.Get("h_Calo422SKclusters_"+esection)
+    plot_algorithm([histogram1, histogram2], canvas, esection) 
