@@ -1,3 +1,7 @@
+"""
+This is a set of functions that are used by many of the plotting scripts. IMPORTANT, things have changed a bit and not every single variation has been checked so there very well might be some things that break while using this so if this is the case, please just email me sscovill@cern.ch and I will fix it.
+"""
+
 import ROOT
 import sys
 from array import array
