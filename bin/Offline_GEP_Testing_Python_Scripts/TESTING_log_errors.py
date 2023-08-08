@@ -13,7 +13,15 @@ from helper_functions import *
 stylistic = apply_atlas_style()
 ROOT.gROOT.SetStyle("AtlasStyle")
 
-bins = int(sys.argv[2])
+root_file                   = sys.argv[1]
+bins                        = int(sys.argv[2])
+cut                         = sys.argv[3]
+legend_adjustment_x         = float(sys.argv[4])
+legend_adjustment_y         = float(sys.argv[5])
+TPave_fontsize              = sys.argv[6]
+TPave_start                 = float(sys.argv[7])
+legend_font                 = float(sys.argv[8])
+
 esection = sys.argv[10]
 cum = False
 logarithm = False
@@ -33,25 +41,12 @@ plotting = sys.argv[2]
 if "--sk" in sys.argv:
     hist1 = file.Get("h_Calo422GlSKTopoClusters"+esection)
     hist2 = file.Get("h_Calo420GlSKTopoClusters"+esection)
-    #hist3 = file.Get("h_CaloCalSKclusters"+esection)
-    #hist1 = file.Get("h_Calo422SKclusters_N1")
-    #hist2 = file.Get("h_Calo420SKclusters_N1")
-    #hist3 = file.Get("h_CaloCalSKclusters_N1")
-elif "--splitting" in sys.argv:
-    
-    if "--422" in sys.argv:
-        hist1 = file.Get("h_Calo422G)
 elif "--onvoff" in sys.argv:
     hist1 = file.Get("h_Calo"+sys.argv[-1]+"SKclusters_N")
     hist2 = file.Get("h_Calo"+sys.argv[-1]+"SKTopoClusters_N")
-    #hist3 = file.Get("h_CaloCalSKclusters_N")
 else:
     hist1 = file.Get("h_Calo422TopoClusters"+esection) # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
     hist2 = file.Get("h_Calo420TopoClusters"+esection) # Change for pre versus post sk: Calo420TopoClusters_N -> Calo420SKclusters_N
-    #hist3 = file.Get("h_CaloCalTopoClusters"+esection) # Change for pre versus post sk: CaloCalTopoClusters_N -> CaloCalSKclusters_N
-    #hist1 = file.Get("h_Calo422TopoClusters_N1") # Change for pre versus post sk: Calo422TopoClusters_N -> Calo422SKclusters_N
-    #hist2 = file.Get("h_Calo420TopoClusters_N1") # Change for pre versus post sk: Calo420TopoClusters_N -> Calo420SKclusters_N
-    #hist3 = file.Get("h_CaloCalTopoClusters_N1") # Change for pre versus post sk: CaloCalTopoClusters_N -> CaloCalSKclusters_N
 if "--onvoff" in sys.argv:
     hist_legend_names = [sys.argv[-1]+"-Global SK", sys.argv[-1]+"-Offline SK"]
 else:
@@ -59,7 +54,6 @@ else:
 
 hist1.SetName(hist_legend_names[0])
 hist2.SetName(hist_legend_names[1])
-#hist3.SetName(hist_legend_names[2])
 
 canvas = ROOT.TCanvas("canvas", "Histograms", 1200, 800)
 canvas.Update()
@@ -76,7 +70,6 @@ for i in [hist1, hist2]:
 set_y_axis_to_bin_ratio([hist1, hist2])
 
 x_max = get_histograms_xmax([hist1, hist2])
-#x_max = get_histograms_xmax([hist1, hist2])
 y_max = get_histograms_ymax([hist1, hist2], bins)
 
 hist_titles = ["Number of Topoclusters", "Number of Topoclusters post SK", "Cumulative Number of Topoclusters", "Cumulative Number of Topoclusters post SK"]
@@ -114,9 +107,8 @@ hist1.Draw("hist")
 canvas.Update()
 
 
-starting = float(sys.argv[9])
 
-atlas, sim_internal, hl, min_bia = write_all_but_ETC(starting, sys.argv[6])
+atlas, sim_internal, hl, min_bia = write_all_but_ETC(TPave_start, sys.argv[6])
 atlas.Draw()
 sim_internal.Draw()
 hl.Draw()
@@ -125,14 +117,12 @@ canvas.Update()
 
 
 if "NoCut" not in get_save_file_name(sys.argv[1], bins, "N"):
-    etcut = write_ET_cut(starting, sys.argv[6], cut)
+    etcut = write_ET_cut(TPave_start, TPave_fontsize, cut)
     etcut.Draw()
     canvas.Update()
 
 hist2.Sumw2(0)
 hist2.SetLineColor(ROOT.kRed)
-#hist2.SetFillColorAlpha(ROOT.kRed, 0.1)
-#hist2.SetFillStyle(3490)
 hist2.SetLineWidth(3)
 if cum:
     hist2 = hist2.GetCumulative(ROOT.kFALSE)
@@ -140,44 +130,17 @@ hist2.SetEntries(histogram_total[1])
 hist2.Draw("hist same")
 canvas.Update()
 
-#hist3.SetLineColor(ROOT.kGreen+2)
-
-#hist3.Sumw2()
-"""third_histogram = False
-if "NoCut" in get_save_file_name(sys.argv[1], bins, plotting) and "--onvoff" not in sys.argv:
-    third_histogram = True
-    hist3.SetLineWidth(2)
-    if cum:
-        hist3 = hist3.GetCumulative(ROOT.kFALSE)
-    hist3.SetEntries(histogram_total[2])
-    hist3.Draw("hist SAME")
-    #hist3.SetFillColorAlpha(ROOT.kGreen-2, 0.1)
-    canvas.Update()
-"""
 canvas.SetName("All_GEP_Algo")
 canvas.Update()
-
-legend_font = sys.argv[8]
-legend_start = float(sys.argv[7])
-legend_adjustment_x = float(sys.argv[4])
-legend_adjustment_y = float(sys.argv[5])
-legend_sizes_third = {"0.03": ROOT.TLegend(legend_start, 0.5, legend_start + 0.12, 0.62), "0.04": ROOT.TLegend(legend_start, 0.5, legend_start + 0.15, 0.62)}
 legend_sizes = {"0.03": ROOT.TLegend(legend_adjustment_x + 0.2, legend_adjustment_y + 0.3,legend_adjustment_x + 0.3, legend_adjustment_y + 0.42), "0.04": ROOT.TLegend(legend_adjustment_x + 0.2, legend_adjustment_y + 0.3,legend_adjustment_x + 0.33, legend_adjustment_y + 0.42)}
-"""
-if third_histogram:
-    legend = legend_sizes_third[legend_font]
-else:
-    legend = legend_sizes[legend_font]"""
-legend = legend_sizes[legend_font]
+legend = legend_sizes[str(legend_font)]
 
 legend.AddEntry(hist1,hist_legend_names[0].replace("_", " ")) 
 legend.AddEntry(hist2,hist_legend_names[1].replace("_", " "), "l") 
-#if third_histogram:
-#    legend.AddEntry(hist3, hist_legend_names[2].replace("_", " "), "l") 
 hist1.GetXaxis().SetTitleSize(0.04)
 hist1.GetYaxis().SetTitleSize(0.04)
-legend.SetTextSize(float(sys.argv[8]))
-#legend.SetLineWidth(0)                      # Remove the boundary on the legend
+legend.SetTextSize(legend_font)
+
 legend.Draw("same")  
 
 canvas.Update()
